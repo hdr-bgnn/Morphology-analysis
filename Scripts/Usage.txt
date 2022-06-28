@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# Usage : python Morphology_main.py <input_file> <measure.json> <landmark.json> <presence.json> <image_lm.png>
+# <input_file> : segmented_ image  in png : INHS_122505_segmented.png
+# <measure.json> : ouput file name for measure {'A':x,'B':y...}
+# <landmark.json> : ouput file name for landmark dictionary {'1':[x,y],'2':[x,y]....}
+# <presence.json> : presence dictionary {"dorsal_fin":{number:2 , percent:0.96 },'trunk':{}...}
+# <image_lm.png> : image with landmark
+
+python Morphology_main.py INHS_122505_segmented.png measure.json landmark.json presence.json image_lm.png
