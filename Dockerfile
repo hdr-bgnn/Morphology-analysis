@@ -51,5 +51,5 @@ ADD Scripts/Traits_class.py /pipeline/Morphology/Traits_class.py
 ADD Scripts/Morphology_main.py /pipeline/Morphology/Morphology_main.py
 
 # Set the default command to a usage statement
-CMD echo "Usage Morphology: Morphology_main.py  <input_file> <measure.json> <landmark.json> <presence.json> <image_lm.png>\n"\
+CMD echo "Usage Morphology: Morphology_main.py  <input_file> <metadata.json> <measure.json> <landmark.json> <presence.json> <image_lm.png>\n"\
 
