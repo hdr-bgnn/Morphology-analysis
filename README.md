@@ -37,6 +37,10 @@ The approach we take is the following :
 
 
 ## 2- Landmarks and measurement
+
+We use the following landmarks and measurement labels and description. If you had more features in the class and codes to extract landmarks or measurement, please update the image description and table
+
+
   
 ## 3- Class description
 
