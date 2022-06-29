@@ -10,7 +10,7 @@ This tool is a part of a bigger project, find the overview [here]
 
 The segmented image input looks like this. It is produced using Maruf segementation (semantic) code based on CNN (unet) deeplearning algorithm, more description on the repo. The output is 11 classes (11 trait : 'dorsal_fin', 'adipos_fin', 'caudal_fin, 'anal_fin', 'pelvic_fin', 'pectoral_fin', 'head', 'eye', 'caudal_fin_ray, 'alt_fin_ray', 'trunk') that are color coded.
 
-![segmented fish image](https://github.com/thibaulttabarin/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png)
+![segmented fish image](https://github.com/thibaulttabarin/Morphology-analysis/blob/main/Test_Data/INHS_FISH_000742_segmented.png)
 
 Need the color legend.
 
