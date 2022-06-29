@@ -82,18 +82,23 @@ snout length or preorbital depth  |  pOD           |  distance  |  length from t
 
 We create a class to add more fexibility and give a frame work for further developement. Here is a short description of the class "Trait_class", couples functionality and usage. The best way understand it is to play with the class using the Notebook.
 
-Class Name : Trait_class
-Location : Trait_class.py
-Description : This class create an object "segmented_image" from [segmented_image.png](https://github.com/thibaulttabarin/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png). Upon the initialization (creation of the object), the image.png is imported converted and is split in several channel corresponding to the traits (trunk, dorsal fin...) in the form of dictionnary with key = trait  and value a mask. Then multiple function will extract information on individual channel.
+1. Class Overview
++ Class Name : Trait_class
++ Location : Trait_class.py
++ Description : This class create an object "segmented_image" from [segmented_image.png](https://github.com/thibaulttabarin/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png). Upon the initialization (creation of the object), the image.png is imported converted and is split in several channel corresponding to the traits (trunk, dorsal fin...) in the form of dictionnary with key = trait  and value a mask. Then multiple function will extract information on individual channel.
 
+### Usage and main fucntion: 
+2. Quick start
 Create a segmented image object
+```
 import Trait_class as tc 
 img_seg = tc.segmented_image("image_segmented.png")
-Main functions:
-img_seg.get_channels_mask() : Create a dictionnary key = trait, value = mask for the trait
-img_seg.get_presence_matrix() : Create presence matrix
-img_seg.all_landmark() : found the landmarks
-img_seg.all_measure() : calculate the measurment
+```
+3. Main functions:
+ + img_seg.get_channels_mask() : Create a dictionnary key = trait, value = mask for the trait
+ + img_seg.get_presence_matrix() : Create presence matrix
+ + img_seg.all_landmark() : found the landmarks
+ + img_seg.all_measure() : calculate the measurment
 
 ## 4- Input and Output
 The main script is Morphology_main.py The usage is python Morphology_main.py  input_file.png metadata.json measure.json landmark.json presence.json image_lm.png
