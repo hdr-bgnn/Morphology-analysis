@@ -1,0 +1,11 @@
+﻿trait,abbreviation,type,anatomicalDefinition,codeDefinition
+standard length, SL,distance,length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin,
+eye area, EA,area,area of the eye,
+"head area, triangle", HAt,area,"area of head as outlined by three points: tip of snout (landmark #1), back of head (landmark #2), and ventral portion of head (landmark #13)",
+"head area, pixels", HAp,area,area of head based on number of pixels,
+eye area to head area, EHA,area,ratio of eye area to head area,
+head-to-caudal length, HCL,distance,length along the dorsal side (top) from the back of the head (landmark #2) to the end of the peduncle (landmark #5),
+eye diameter,ED,distance,length across the eye along the anterior-posterior (left-right) axis (landmarks #14 & #15),
+head length,HL,distance,length from the anterior-most (left-most) part of the head (landmark #1) to the posterior-most (right-most) part of the head (landmark #12),
+head depth,HD,distance,length from the dorsal-most (top) part of the head (landmark #2) to the ventral-most (bottom) part of the head (landmark #13),
+snout length or preorbital depth,pOD,distance,length from the anterior-most (left-most) part of the eye (landmark #14) to the anterior-most (left-most)part of the head (landmark #1),
