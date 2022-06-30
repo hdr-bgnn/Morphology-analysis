@@ -362,12 +362,32 @@ class segmented_image:
         
         # reorder the key 
         new_landmark={}
-        list_order = [str(i) for i in range(1,19)]
+        list_order = [str(i) for i in range(1,16)]
         for key in list_order:
             new_landmark[key] = landmark[key]                     
                                 
         return new_landmark
 
+    
+    def measure_eye_area(self):
+        '''
+        Calculate eye area after cleaning and filing hole
+        
+        '''
+        mask = self.mask
+        eye_region = self.clean_trait_region(mask['eye'])
+        
+        return eye_region.area
+    
+    def measure_head_area(self):
+        '''
+        Calculate head area  after cleaning and filing hole
+        
+        '''
+        mask = self.mask
+        head_region = self.clean_trait_region(mask['head'])
+        
+        return head_region.area 
     
     def measure_eye_head_ratio(self):
         '''
@@ -376,13 +396,13 @@ class segmented_image:
         2- Area eye after cleaning and filing hole
         3- ratio
         '''
-        mask = self.mask
-        head_region = self.clean_trait_region(mask['head'])
-        eye_region = self.clean_trait_region(mask['eye'])
+        eye_areaa = measure_eye_area()
+        head_area = measure_head_area()
         
-        eye_head_ratio = eye_region.area/head_region.area
+        eye_head_ratio = eye_area/head_area
         
-        return eye_head_ratio
+        return eye_head_ratio    
+    
     
     def measure_eye_diameter(self):        
         '''
@@ -392,7 +412,7 @@ class segmented_image:
         mask = self.mask
         eye_region = self.clean_trait_region(mask['eye'])
             
-        eq_diameter = (eye_region.area/math.pi)**0.5
+        eq_diameter = eye_region.equivalent_diameter_area
             
         return eq_diameter    
      
@@ -406,6 +426,19 @@ class segmented_image:
         head_length = self.get_distance(p_2,p_15)
         
         return head_length
+    
+    def calculate_triangle_area(self, point_1, point_2, point_3):
+        
+        # calculate the semi-perimeter
+        a = self.get_distance(point_1, point_2)
+        b = self.get_distance(point_2, point_3)
+        c = self.get_distance(point_3, point_1)
+        
+        s = (a + b + c) / 2
+
+        # calculate the area
+        area = (s*(s-a)*(s-b)*(s-c)) ** 0.5
+        return area
     
     def measure_head_depth(self):
         '''
@@ -433,16 +466,15 @@ class segmented_image:
         landmark = self.landmark
         measure={}
         # Standard length body length 
-        measure['A'] = self.get_distance(landmark['1'],landmark['6'])
-        measure['B'] = self.measure_eye_head_ratio()
-        measure['C'] = self.measure_eye_diameter()
-        measure['D'] = self.measure_head_depth()
-        # Head length landmark 2 to 15
-        measure['E'] = self.get_distance(landmark['2'],landmark['15'])
-        # 
-        measure['F'] = self.get_distance(landmark['1'],landmark['14'])
-        # 
-        measure['G'] = self.get_distance(landmark['1'],landmark['6'])
+        measure['SL'] = self.get_distance(landmark['1'],landmark['6'])
+        measure['EA'] = int(self.measure_eye_area())
+        measure['HAt'] = self.calculate_triangle_area(landmark['1'],landmark['2'],landmark['13'])
+        measure['HAp'] = self.measure_head_area()
+        measure['HCL'] = "WIP"
+        measure['ED'] = self.measure_eye_diameter()
+        measure['HL'] = self.get_distance(landmark['1'],landmark['12'])
+        measure['HD'] = self.get_distance(landmark['2'],landmark['13'])
+        measure['pOD'] = self.get_distance(landmark['1'],landmark['14'])
         return measure
         
     def visualize_landmark(self):

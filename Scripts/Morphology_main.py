@@ -7,6 +7,7 @@ Created on Tue May 24 09:21:33 2022
 """
 import Traits_class as tc
 import json, sys
+import numpy as np
 
 def get_scale(metadata_file):
 
@@ -27,6 +28,18 @@ def get_scale(metadata_file):
         unit =[None]
     return scale , unit
 
+# this class is used by json.dump to control that every value as the right format
+# particular problem encounter with np.int64 value type
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            print(obj)
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
 
 def main(input_file, metadata_file, output_measure, output_landmark, output_presence, 
          output_lm_image=None):
@@ -43,8 +56,9 @@ def main(input_file, metadata_file, output_measure, output_landmark, output_pres
     measurement['unit'] = unit                   
     
     # Save the dictionnaries in json file
+    # use NpEncoder to convert the value to correct type (np.int64 -> int)
     with open(output_measure, 'w') as f:
-        json.dump(measurement, f)    
+        json.dump(measurement, f, cls=NpEncoder)    
         
     with open(output_landmark, 'w') as f:
         json.dump(landmark, f)
