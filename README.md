@@ -1,5 +1,5 @@
 # Morphology-analysis
-Extract morphological characteristics from trait segmented fish
+Extract morphological characteristics from image of fish trait segmentation
 
 The goals of the tool is to extract measurments and landmarks of fish from the segmented fish iamge porduce by [Maruf code]().
 It provides a framework with various tools such as class and notebook to help further development.
