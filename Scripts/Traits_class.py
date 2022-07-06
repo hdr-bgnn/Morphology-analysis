@@ -5,6 +5,7 @@ Created on Wed May 18 16:02:54 2022
 
 @author: thibault
 Class definition for morpholopgy analysis
+Version 1
 """
 import os, sys, math, json
 import numpy as np
@@ -309,20 +310,25 @@ class segmented_image:
         Then, in each case get the mot left point in the half of the caudal fin
         '''
         _,_,_,_,center_caudal,new_mask_caudal= self.landmark_generic('caudal_fin')
-        mask_caudal_5 = new_mask_caudal.copy()
-        mask_caudal_7 = new_mask_caudal.copy()
-        row_caudal = round(center_caudal[0])
-
-        mask_caudal_5[row_caudal:,:] = 0
-        mask_caudal_7[:row_caudal,:] = 0
         
-        lm_5_7=[]
-        for temp_mask in [mask_caudal_5,mask_caudal_7]:        
-            x,y = np.where(temp_mask)
-            y_front = y.min()
-            x_front = round(np.mean(np.where(temp_mask[:, y_front,])))
-            lm_5_7.append((int(x_front),int(y_front)))
-        return lm_5_7[0], lm_5_7[1]
+        if np.any(new_mask_caudal):
+            mask_caudal_5 = new_mask_caudal.copy()
+            mask_caudal_7 = new_mask_caudal.copy()
+            row_caudal = round(center_caudal[0])
+
+            mask_caudal_5[row_caudal:,:] = 0
+            mask_caudal_7[:row_caudal,:] = 0
+        
+            lm_5_7=[]
+            for temp_mask in [mask_caudal_5,mask_caudal_7]:        
+                x,y = np.where(temp_mask)
+                y_front = y.min()
+                x_front = round(np.mean(np.where(temp_mask[:, y_front,])))
+                lm_5_7.append((int(x_front),int(y_front)))
+                
+            return lm_5_7[0], lm_5_7[1]   
+        else: 
+            return [],[]
         
     def all_landmark(self):
         '''
@@ -338,17 +344,6 @@ class segmented_image:
         
         #landmark #5 and 7 caudal fin
         landmark['5'], landmark['7'] = self.landmark_5_7()
-        
-        # head length, vertical line of the head passing by the center of the eye
-        col_eye = round(center_eye[1])
-        
-        if len(new_mask_head):
-            head_vert_line = new_mask_head[:,col_eye]
-            #head_length = np.count_nonzero( cleaned_mask[:,col_eye]== 1)
-            index_head_len= np.where(head_vert_line!=0)[0]
-            landmark['uk'] = (int(index_head_len[-1]),int(col_eye))
-        
-        
         
         #trunk
         _, landmark['6'],_ ,_ ,_ ,_ = self.landmark_generic('trunk')
@@ -376,8 +371,10 @@ class segmented_image:
         '''
         mask = self.mask
         eye_region = self.clean_trait_region(mask['eye'])
-        
-        return eye_region.area
+        if eye_region:
+            return eye_region.area
+        else:
+            return 'None'
     
     def measure_head_area(self):
         '''
@@ -387,7 +384,10 @@ class segmented_image:
         mask = self.mask
         head_region = self.clean_trait_region(mask['head'])
         
-        return head_region.area 
+        if head_region:
+            return head_region.area
+        else:
+            return 'None' 
     
     def measure_eye_head_ratio(self):
         '''
@@ -464,17 +464,30 @@ class segmented_image:
         Collect all the measurment for the fish
         '''
         landmark = self.landmark
-        measure={}
-        # Standard length body length 
-        measure['SL'] = self.get_distance(landmark['1'],landmark['6'])
+        measure={'SL':'None', 'EA':'None', 'HAt':'None', 'HAp':'None', 'HCL':'None', 'ED':'None', 'HL':'None', 'HD':'None','pOD':'None', }
+        # Standard Length (body length)
+        if landmark['1'] and landmark['6']:
+            measure['SL'] = self.get_distance(landmark['1'],landmark['6'])
+        # Eye Area
         measure['EA'] = int(self.measure_eye_area())
-        measure['HAt'] = self.calculate_triangle_area(landmark['1'],landmark['2'],landmark['13'])
+        # Head Area triangle
+        if landmark['1'] and landmark['2'] and landmark['13']:
+            measure['HAt'] = self.calculate_triangle_area(landmark['1'],landmark['2'],landmark['13'])
+        # Head area
         measure['HAp'] = self.measure_head_area()
+        # Head to caudal line
         measure['HCL'] = "WIP"
+        # Eye Diameter
         measure['ED'] = self.measure_eye_diameter()
-        measure['HL'] = self.get_distance(landmark['1'],landmark['12'])
-        measure['HD'] = self.get_distance(landmark['2'],landmark['13'])
-        measure['pOD'] = self.get_distance(landmark['1'],landmark['14'])
+        # Head Length
+        if landmark['1'] and landmark['12']:
+            measure['HL'] = self.get_distance(landmark['1'],landmark['12'])
+        # Head Depth
+        if landmark['2'] and landmark['13']:
+            measure['HD'] = self.get_distance(landmark['2'],landmark['13'])
+        # preObital Depth
+        if landmark['1']and landmark['14']:
+            measure['pOD'] = self.get_distance(landmark['1'],landmark['14'])
         return measure
         
     def visualize_landmark(self):
