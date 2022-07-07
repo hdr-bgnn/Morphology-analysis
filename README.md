@@ -120,6 +120,8 @@ You will need to use [Morphology_env.yml](https://github.com/hdr-bgnn/Morphology
 
 Setup jupyter notebook for OSC:
 ```
+cd ~
+git clone git@github.com:hdr-bgnn/Morphology-analysis.git
 module load miniconda3
 cd Morphology-analysis/Scripts
 conda env create -f morphology_env.yml -n morphology_env
@@ -128,6 +130,15 @@ conda env create -f morphology_env.yml -n morphology_env
 pip install ipykernel
 python -m ipykernel install --user --name morphology --display-name "Python (Morphology_jupyter)"
 ```
+**Launch Jupyter notebook Morphology_dev.ipynb**
+  + Use OSC dashboard [onthedemand](https://ondemand.osc.edu/pun/sys/dashboard)
+  + Tab Interactive Apps
+  + Select Jupyter notebook
+  + Choose the configuration you want (start with cores:1 Number_hours:1, Node_type:any)
+  + Launch
+  + Navigate to ~/Morphology-analysis/Scripts/Morphology_dev.ipynb
+  + Change kernel to Morphology_jupyter
+
 
 
 ## 6-Container, usage and release
