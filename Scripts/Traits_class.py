@@ -206,8 +206,10 @@ class segmented_image:
         combo = np.zeros_like(mask,dtype="uint8")
         
         for trait in list_trait:
-            
-            combo = combo + mask[trait]
+            if np.any(mask[trait]):
+                combo = combo + mask[trait]
+            else:
+                return None
             
         #combo_cleaned = self.remove_holes(combo)
         
@@ -457,7 +459,55 @@ class segmented_image:
         head_depth = np.count_nonzero( head_hori_line)
     
         return head_depth
+
+    def measure_head_depth_2(self):
+        '''
+        Measure height of bbox
+        '''
+        #eye
+        _, _, _, _, center_eye, _ = self.landmark_generic('eye')     
+
+        # head
+        _, _, _, _, _, new_mask_head = self.landmark_generic('head')
+        # landmark 15
+        # head length, vertical line of the head passing by the center of the eye
+        row_eye = round(center_eye[0])
+        
+        head_hori_line = new_mask_head[row_eye,:]
+        head_depth = np.count_nonzero( head_hori_line)
     
+        return head_depth
+    
+    
+    def measure_body_length(self):
+        '''
+        Measure length of head, trunk, caudal_fin.
+        Combine head, trunk, caudal_fin masks
+        clean the mask
+        get bbox and get length of bbox
+        '''
+        body_length = "None"
+        head_trunk_caudal = self.combine_trait_mask(['head','trunk','caudal_fin'])
+        if np.any(head_trunk_caudal):
+            
+            trait_region= self.clean_trait_region(head_trunk_caudal)
+            xb0, yb0, xb1, yb1 = trait_region.bbox
+            body_length = yb1-yb0
+    
+        return body_length
+    
+    def measure_body_depth(self):
+        '''
+        Measure height of bounding box of the trunk
+        '''
+        body_depth = "None"
+        presence_matrix = self.presence_matrix
+        if presence_matrix['trunk']['number']>=1:
+            trunk_region = self.clean_trait_region(self.mask['trunk'])
+            xb0, yb0, xb1, yb1 = trunk_region.bbox
+            body_depth = xb1-xb0
+        
+        return body_depth
     
     def all_measure(self):        
         '''
@@ -488,28 +538,53 @@ class segmented_image:
         # preObital Depth
         if landmark['1']and landmark['14']:
             measure['pOD'] = self.get_distance(landmark['1'],landmark['14'])
+        # Body length
+        measure['BL'] = self.measure_body_length()
+        
+        # Body depth
+        measure['BD'] = self.measure_body_depth()
+            
         return measure
         
     def visualize_landmark(self):
             
+        landmark = self.all_landmark()
+        img_arr = self.img_arr
+        img = Image.fromarray(img_arr)
+        img1 = ImageDraw.Draw(img)
         
-            landmark = self.all_landmark()
-            img_arr = self.img_arr
-            img = Image.fromarray(img_arr)
-            img1 = ImageDraw.Draw(img)
-        
-            #
-            #fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 15)
-            fnt = ImageFont.load_default()
-            for i,(k,v) in enumerate(landmark.items()):
-                if v:
-                    x,y = v
-                    xy = [(y-9,x-9),(y+9,x+9)]
-                    img1.ellipse(xy, fill='gray', outline=None, width=1)
-                
-                    img1.text((y-6, x-6), k, font=fnt, fill='black')
-            # Display the image created
+        #
+        #fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 15)
+        fnt = ImageFont.load_default()
+        for i,(k,v) in enumerate(landmark.items()):
             
-            return img
+            if v:
+                x,y = v
+                xy = [(y-9,x-9),(y+9,x+9)]
+                img1.ellipse(xy, fill='gray', outline=None, width=1)
+                
+                img1.text((y-6, x-6), k, font=fnt, fill='black')
+            # Display the image created
+        return img
+        
+    def visualize_a_bbox(self, trait_name):
+        
+        
+        trait_prop = self.clean_trait_region(self.mask[trait_name])
+        top, left, bottom, right = trait_prop.bbox
+
+        shape = [(left, top), (right,bottom)]
+  
+        # creating new Image object
+        img_arr = self.img_arr
+        img = Image.fromarray(img_arr)
+        img1 = ImageDraw.Draw(img)
+  
+        # create rectangle image
+        img1 = ImageDraw.Draw(img)  
+        img1.rectangle(shape, outline ="red")
+        
+        # Display the image created
+        return img
 
 
