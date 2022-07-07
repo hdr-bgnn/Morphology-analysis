@@ -118,6 +118,17 @@ on Test_Data/INHS_FISH_18609_measure.json Test_Data/INHS_FISH_18609_landmark.jso
 In development, you can check [this notebook](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/Morphology_dev.ipynb)
 You will need to use [Morphology_env.yml](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/morphology_env.yml) to set up your environment before working (required dependencies). I recommend conda, miniconda as environment manager.
 
+Setup jupyter notebook for OSC:
+```
+module load miniconda3
+cd Morphology-analysis/Scripts
+conda env create -f morphology_env.yml -n morphology_env
+```
+```
+pip install ipykernel
+python -m ipykernel install --user --name morphology --display-name "Python (Morphology_jupyter)"
+```
+
 
 ## 6-Container, usage and release
 
