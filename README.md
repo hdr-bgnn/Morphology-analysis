@@ -1,43 +1,43 @@
 # Morphology-analysis
-Extract morphological characteristics from image of fish trait segmentation
+Extract morphological characteristics from image of fish trait segmentation.
 
-The goals of the tool is to extract measurments and landmarks of fish from the segmented fish iamge porduce by [Maruf code]().
-It provides a framework with various tools such as class and notebook to help further development.
-Another goal is to release working version to in container for easy integration into workflow such as [BGNN_Snakemake]
-This tool is a part of a bigger project, find the overview [here]
+The goals of the tool is to extract measurments and landmarks of fish from the segmented fish iamge porduced by M. Maruf.
+It provides a framework for creating modularized tools by using classes and providing a way to visualize and test functionality using jupyter notebook. 
+We will release and containerize a working version for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
+This tool can me made more generalizable.
 
 ## 1- Segmented image .png description
 
-The segmented image input looks like this. It is produced using Maruf segementation (semantic) code based on CNN (unet) deeplearning algorithm, more description on the repo. The output is 11 classes (11 trait : 'dorsal_fin', 'adipos_fin', 'caudal_fin, 'anal_fin', 'pelvic_fin', 'pectoral_fin', 'head', 'eye', 'caudal_fin_ray, 'alt_fin_ray', 'trunk') that are color coded.
+The segmented image input looks like image below, with traits color coded and identified by "blobs". The segmentation model uses [M. Maruf's segmentation code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py), and is based on a Convolutional Nerual Net (CNN; unet) deep learning algorithm. You can find more information on the [BGNN-trait-segementation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation).  The output is 11 classes (traits) that are color coded. We are only using 9 of them, and are excluding alt_fin_ray and caudal_fin_ray.
 
 ![segmented fish image](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Test_Data/INHS_FISH_000742_segmented.png)
 ![Color legend](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/trait_legend.png)
 
-When you export this image in python using pillow library (PIL.Image.open(file_name)), the corresponding color coding in RGB is 
-{'background': [0, 0, 0],
-'dorsal_fin': [254, 0, 0],
-'adipos_fin': [0, 254, 0],
-'caudal_fin': [0, 0, 254],
-'anal_fin': [254, 254, 0],
-'pelvic_fin': [0, 254, 254],
-'pectoral_fin': [254, 0, 254],
-'head': [254, 254, 254],
-'eye': [0, 254, 102],
-'caudal_fin_ray': [254, 102, 102],
-'alt_fin_ray': [254, 102, 204],
-'trunk': [0, 124, 124]}
+When you export this image in python using pillow library (PIL.Image.open(file_name)), the corresponding color coding in RGB is:
+* 'background': [0, 0, 0],
+* 'dorsal_fin': [254, 0, 0],
+* 'adipos_fin': [0, 254, 0],
+* 'caudal_fin': [0, 0, 254],
+* 'anal_fin': [254, 254, 0],
+* 'pelvic_fin': [0, 254, 254],
+* 'pectoral_fin': [254, 0, 254],
+* 'head': [254, 254, 254],
+* 'eye': [0, 254, 102],
+* 'caudal_fin_ray': [254, 102, 102],
+* 'alt_fin_ray': [254, 102, 204],
+* 'trunk': [0, 124, 124]
 
-The approach we take is the following :
+The approach that we use for extracting traits is the following:
 
-  1. We isolate each indivual traits
-  2. We remove small blob and fill holes
-  3. We identify landmarks (defined in section 2-)
-  4. We use landmarks and morphological tools (centroid, area...) to assess the measurement (**external characters**)
+  1. Isolate indivual traits (e.g., isolate the dorsal_fin)
+  2. Remove small blobs and fill in gaps within each trait
+  3. Identify landmarks (defined in section 2)
+  4. Use landmarks and morphological tools (centroid, area, etc.) to extract the measurements (**external characters**)
 
 
-## 2- Landmarks and measurement
+## 2- Landmarks and measurements
 
-We use the following landmarks and measurement labels and description. If you had more features in the class and codes to extract landmarks or measurement, please update the image description and table.
+We use the following descriptions and labels for landmarks and measurements. If you had more features in the class and codes to extract landmarks or measurement, please create an issue or make a pull request to update the image description and corresponding table.
 
 ![Fish landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnows_Landmarks_v1.png)
 
@@ -79,29 +79,32 @@ snout length or preorbital depth  |  pOD           |  distance  |  length from t
   
 ## 3- Class description
 
-We create a class to add more fexibility and give a frame work for further developement. Here is a short description of the class "Trait_class", couples functionality and usage. The best way understand it is to play with the class using the Notebook.
+We create a class to add more fexibility, which can be generalized to other projects. 
 
-1. Class Overview
+*Class Overview*
 + Class Name : Trait_class
 + Location : Trait_class.py
-+ Description : This class create an object "segmented_image" from [segmented_image.png](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png). Upon the initialization (creation of the object), the image.png is imported converted and is split in several channel corresponding to the traits (trunk, dorsal fin...) in the form of dictionnary with key = trait  and value a mask. Then multiple function will extract information on individual channel.
++ Description : This class creates an object "segmented_image" from [segmented_image.png](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png). Upon the creation of the object "segmented_image", the image.png is imported and split into channel corresponding to the traits (trunk, dorsal_fin, etc.) in the form of dictionnary with key = trait  and value a mask. Then multiple functions will extract information on individual channel.
 
 ### Usage and main fucntion: 
-2. Quick start
+
+*Quick start*
 Create a segmented image object
 ```
 import Trait_class as tc 
 img_seg = tc.segmented_image("image_segmented.png")
 ```
-3. Main functions:
+*Main functions*:
  + img_seg.get_channels_mask() : Create a dictionnary key = trait, value = mask for the trait
  + img_seg.get_presence_matrix() : Create presence matrix
  + img_seg.all_landmark() : found the landmarks
  + img_seg.all_measure() : calculate the measurment
 
 ## 4- Input and Output
-The main script is Morphology_main.py The usage is python Morphology_main.py  input_file.png metadata.json measure.json landmark.json presence.json image_lm.png
-Code to test using the data provided in [/Test_Data/]()
+
+To use Morphology_main.py., simply fill in: Morphology_main.py input_file.png metadata.json measure.json landmark.json presence.json image_lm.png
+
+As an example, the code below tests the data in fs/ess/PAS2136/Test_Data/ on the OSC
 ```
 Morphology_main.py Test_Data/INHS_FISH_18609_segmented.png Test_Data/INHS_FISH_18609.js
 on Test_Data/INHS_FISH_18609_measure.json Test_Data/INHS_FISH_18609_landmark.json Test_Data/INHS_FISH_18609_presence.json Test_Data/INHS_FISH_18609_image_lm.png
@@ -115,9 +118,47 @@ on Test_Data/INHS_FISH_18609_measure.json Test_Data/INHS_FISH_18609_landmark.jso
  + image_lm.png : original segmented fish image superimposed with landmark position and label [example here](https://github.com/thibaulttabarin/Morphology-analysis/blob/main/Test_Data/INHS_FISH_000742_image_lm.png)
 
 ## 5- Notebook to play
+
 In development, you can check [this notebook](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/Morphology_dev.ipynb)
 You will need to use [Morphology_env.yml](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/morphology_env.yml) to set up your environment before working (required dependencies). I recommend conda, miniconda as environment manager.
 
+To set up your virtual environment in the OSC:
+```
+#go to OSC home directory
+#open a cluster
+
+#clone the repository onto your home directory
+git clone <SSH link>
+
+#navigate to scripts
+cd Morphology-analysis/Scripts
+
+#use conda
+load module miniconda3
+conda info -e #see what environments you have; you should be on "base"
+conda env create -f morphology_env.yml -n morphology_env
+#-f means files to select (which is morphology_env.yml)
+#-n means to name the virtual environment, which here is "morphology_env"
+
+#check that environment was made
+conda info -e
+
+#now you have a virtual environment!
+#to activate it:
+source acitvate morphology_env
+
+#check that you're on the virtual environment
+conda info -e #you should be on "morphology_env"
+```
+Once the environment is set up, you do not need to recreate it.
+
+Launch the jupyter notebook app and set your kernel to "Python Morphology_jupyter".
+```
+#activate the virtual environment kernel for jupyter notebook
+pip install ipykernel
+python -m ipykernel install --user --name morphlogy_env --display-name "Python (Morphology_jupyter)"
+```
+Once you set up the kernel for jupyter notebook, you do not need to do it again.
 
 ## 6-Container, usage and release
 
