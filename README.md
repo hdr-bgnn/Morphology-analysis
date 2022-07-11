@@ -43,8 +43,10 @@ We use the following landmarks and measurement labels and descriptions. If you a
 
 ![Fish measurment](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Length%20Traits%20(trimmed%2028Jun2022).png)
 
+
 **Landmarks Table**
 
+![table_landmarks](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/MinnowLandmarks%20(trimmed%2028Jun2022).csv)
 type     |  landmarkNumber  |  terminology                                 |  position                                                      |  anatomicalDefinition  |  codeDefinition
 ----------|------------------|----------------------------------------------|----------------------------------------------------------------|------------------------|----------------
 landmark  |  1               |  Tip of snout                                |  anterior-most (left-most) part of head                        |                        |
@@ -64,6 +66,8 @@ landmark  |  14              |  anterior-most (left-most) part of eye       |  a
 landmark  |  15              |  posterior-most (right-most) part of eye     |  posterior-most (right-most) part of eye                       |                        |
   
 **Measurement Table**  
+![table_Measurements](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/MinnowMeasurements%20(trimmed%2028Jun2022).csv)
+
 trait                            |  abbreviation  |  type      |  anatomicalDefinition                                                                                                                          |  codeDefinition
 ----------------------------------|----------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------------
 standard length                   |   SL           |  distance  |  length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin                                                |
