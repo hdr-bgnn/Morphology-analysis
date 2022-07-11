@@ -1,14 +1,14 @@
 # Morphology-analysis
 Extract morphological characteristics from image of fish trait segmentation
 
-The goals of the tool is to extract measurments and landmarks of fish from the segmented fish iamge porduce by [Maruf code]().
-It provides a framework with various tools such as class and notebook to help further development.
-Another goal is to release working version to in container for easy integration into workflow such as [BGNN_Snakemake]
-This tool is a part of a bigger project, find the overview [here]
+The goals of the tool is to extract measurments and landmarks of fish from the segmented fish image produced by [Maruf code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py).
+Here we provide a framework with various tools such as class and notebook to help further development.
+Another goal is to release working version in a container, for easy integration into workflow such as [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake)
+This tool is a part of a bigger project, find the overview [Minnows Project](https://github.com/hdr-bgnn/minnowTraits)
 
 ## 1- Segmented image .png description
 
-The segmented image input looks like this. It is produced using Maruf segementation (semantic) code based on CNN (unet) deeplearning algorithm, more description on the repo. The output is 11 classes (11 trait : 'dorsal_fin', 'adipos_fin', 'caudal_fin, 'anal_fin', 'pelvic_fin', 'pectoral_fin', 'head', 'eye', 'caudal_fin_ray, 'alt_fin_ray', 'trunk') that are color coded.
+The segmented image input looks like this. It is produced using a semantic segementation based on CNN (unet) a deep learning algorithm. More description on [this repo](https://github.com/hdr-bgnn/BGNN-trait-segmentation). The output is 11 classes (11 trait : 'dorsal_fin', 'adipos_fin', 'caudal_fin, 'anal_fin', 'pelvic_fin', 'pectoral_fin', 'head', 'eye', 'caudal_fin_ray, 'alt_fin_ray', 'trunk') that are color coded.
 
 ![segmented fish image](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Test_Data/INHS_FISH_000742_segmented.png)
 ![Color legend](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/trait_legend.png)
@@ -31,17 +31,17 @@ The approach we take is the following :
 
   1. We isolate each indivual traits
   2. We remove small blob and fill holes
-  3. We identify landmarks (defined in section 2-)
-  4. We use landmarks and morphological tools (centroid, area...) to assess the measurement (**external characters**)
+  3. We identify landmarks (defined in section 2)
+  4. We use landmarks and morphological tools (centroid, area...) to calculate the measurement (**external characters**)
 
 
 ## 2- Landmarks and measurement
 
-We use the following landmarks and measurement labels and description. If you had more features in the class and codes to extract landmarks or measurement, please update the image description and table.
+We use the following landmarks and measurement labels and descriptions. If you add more features in the class and codes to extract landmarks or measurement, please update the images and tables.
 
-![Fish landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnows_Landmarks_v1.png)
+![Fish landmarks](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Landmarks%20(trimmed%201Jul2022).png)
 
-![Fish measurment](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnows_Measurments_v1.png)
+![Fish measurment](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Length%20Traits%20(trimmed%2028Jun2022).png)
 
 **Landmarks Table**
 
@@ -139,8 +139,6 @@ python -m ipykernel install --user --name morphology --display-name "Python (Mor
   + Navigate to ~/Morphology-analysis/Scripts/Morphology_dev.ipynb
   + Change kernel to Morphology_jupyter
 
-
-
 ## 6-Container, usage and release
 
 We use github action to create a container what run the main script [Morphology_main.py](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/Morphology_main.py). 
@@ -164,7 +162,7 @@ We use github action to create a container what run the main script [Morphology_
   ```
 ## 7- Development tricks
 
-If you want to test neww version of Morphology_main.py (upudated version on your local computer) you can use the container by bind the local folder (here, Scripts/) containing the updated version of Morphology_main.py and /pipeline/Morphology is where Morphology_main.py is expected to be in the container.
+If you want to test new version of Morphology_main.py (upudated version on your local computer). You can use the container by bind the local folder (here it is in Scripts/) containing the updated version of Morphology_main.py and /pipeline/Morphology is where Morphology_main.py is expected to be in the container. Example:
 ```
 singularity exec --bind Scripts/:/pipeline/Morphology morpho.sif Morphology_main.py Test_Data/INHS_FISH_18609_segmented.png Test_Data/INHS_FISH_18609.json Test_Data/INHS_FISH_18609_measure.json Test_Data/INHS_FISH_18609_landmark.json Test_Data/INHS_FISH_18609_presence.json Test_Data/INHS_FISH_18609_image_lm.png
 
