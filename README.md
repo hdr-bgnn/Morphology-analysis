@@ -1,14 +1,17 @@
 # Morphology-analysis
 Extract morphological characteristics from image of fish trait segmentation.
 
+
 The goals of the tool is to extract measurments and landmarks of fish from the segmented fish iamge porduced by M. Maruf.
 It provides a framework for creating modularized tools by using classes and providing a way to visualize and test functionality using jupyter notebook. 
 We will release and containerize a working version for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
-This tool can me made more generalizable.
+This tool can me made more generalizable but is a part of a bigger project, find the overview [Minnows Project](https://github.com/hdr-bgnn/minnowTraits).
+
 
 ## 1- Segmented image .png description
 
 The segmented image input looks like image below, with traits color coded and identified by "blobs". The segmentation model uses [M. Maruf's segmentation code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py), and is based on a Convolutional Nerual Net (CNN; unet) deep learning algorithm. You can find more information on the [BGNN-trait-segementation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation).  The output is 11 classes (traits) that are color coded. We are only using 9 of them, and are excluding alt_fin_ray and caudal_fin_ray.
+
 
 ![segmented fish image](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Test_Data/INHS_FISH_000742_segmented.png)
 ![Color legend](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/trait_legend.png)
@@ -29,22 +32,27 @@ When you export this image in python using pillow library (PIL.Image.open(file_n
 
 The approach that we use for extracting traits is the following:
 
+
   1. Isolate indivual traits (e.g., isolate the dorsal_fin)
   2. Remove small blobs and fill in gaps within each trait
   3. Identify landmarks (defined in section 2)
   4. Use landmarks and morphological tools (centroid, area, etc.) to extract the measurements (**external characters**)
 
 
+
 ## 2- Landmarks and measurements
 
 We use the following descriptions and labels for landmarks and measurements. If you had more features in the class and codes to extract landmarks or measurement, please create an issue or make a pull request to update the image description and corresponding table.
 
-![Fish landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnows_Landmarks_v1.png)
 
-![Fish measurment](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnows_Measurments_v1.png)
+![Fish landmarks](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Landmarks%20(trimmed%201Jul2022).png)
+
+![Fish measurment](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Length%20Traits%20(trimmed%2028Jun2022).png)
+
 
 **Landmarks Table**
 
+![table_landmarks](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/MinnowLandmarks%20(trimmed%2028Jun2022).csv)
 type     |  landmarkNumber  |  terminology                                 |  position                                                      |  anatomicalDefinition  |  codeDefinition
 ----------|------------------|----------------------------------------------|----------------------------------------------------------------|------------------------|----------------
 landmark  |  1               |  Tip of snout                                |  anterior-most (left-most) part of head                        |                        |
@@ -64,6 +72,8 @@ landmark  |  14              |  anterior-most (left-most) part of eye       |  a
 landmark  |  15              |  posterior-most (right-most) part of eye     |  posterior-most (right-most) part of eye                       |                        |
   
 **Measurement Table**  
+![table_Measurements](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/MinnowMeasurements%20(trimmed%2028Jun2022).csv)
+
 trait                            |  abbreviation  |  type      |  anatomicalDefinition                                                                                                                          |  codeDefinition
 ----------------------------------|----------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------------
 standard length                   |   SL           |  distance  |  length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin                                                |
@@ -128,25 +138,27 @@ To set up your virtual environment in the OSC:
 #open a cluster
 
 #clone the repository onto your home directory
-git clone <SSH link>
+```git clone <SSH link>```
 
 #navigate to scripts
-cd Morphology-analysis/Scripts
+```cd Morphology-analysis/Scripts```
 
 #use conda
+```
 load module miniconda3
 conda info -e #see what environments you have; you should be on "base"
 conda env create -f morphology_env.yml -n morphology_env
-#-f means files to select (which is morphology_env.yml)
-#-n means to name the virtual environment, which here is "morphology_env"
+```
+-f means files to select (which is morphology_env.yml)
+-n means to name the virtual environment, which here is "morphology_env"
 
 #check that environment was made
-conda info -e
+```conda info -e```
 
 #now you have a virtual environment!
 #to activate it:
+```
 source acitvate morphology_env
-
 #check that you're on the virtual environment
 conda info -e #you should be on "morphology_env"
 ```
@@ -159,6 +171,15 @@ pip install ipykernel
 python -m ipykernel install --user --name morphlogy_env --display-name "Python (Morphology_jupyter)"
 ```
 Once you set up the kernel for jupyter notebook, you do not need to do it again.
+**Launch Jupyter notebook Morphology_dev.ipynb**
+  + Use OSC dashboard [onthedemand](https://ondemand.osc.edu/pun/sys/dashboard)
+  + Tab Interactive Apps
+  + Select Jupyter notebook
+  + Choose the configuration you want (start with cores:1 Number_hours:1, Node_type:any)
+  + Launch
+  + Navigate to ~/Morphology-analysis/Scripts/Morphology_dev.ipynb
+  + Change kernel to Morphology_jupyter
+
 
 ## 6-Container, usage and release
 
@@ -183,7 +204,7 @@ We use github action to create a container what run the main script [Morphology_
   ```
 ## 7- Development tricks
 
-If you want to test neww version of Morphology_main.py (upudated version on your local computer) you can use the container by bind the local folder (here, Scripts/) containing the updated version of Morphology_main.py and /pipeline/Morphology is where Morphology_main.py is expected to be in the container.
+If you want to test new version of Morphology_main.py (upudated version on your local computer). You can use the container by bind the local folder (here it is in Scripts/) containing the updated version of Morphology_main.py and /pipeline/Morphology is where Morphology_main.py is expected to be in the container. Example:
 ```
 singularity exec --bind Scripts/:/pipeline/Morphology morpho.sif Morphology_main.py Test_Data/INHS_FISH_18609_segmented.png Test_Data/INHS_FISH_18609.json Test_Data/INHS_FISH_18609_measure.json Test_Data/INHS_FISH_18609_landmark.json Test_Data/INHS_FISH_18609_presence.json Test_Data/INHS_FISH_18609_image_lm.png
 
