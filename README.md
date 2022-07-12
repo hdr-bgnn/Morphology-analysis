@@ -133,7 +133,7 @@ In development, you can check [this notebook](https://github.com/hdr-bgnn/Morpho
 You will need to use [Morphology_env.yml](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/morphology_env.yml) to set up your environment before working (required dependencies). I recommend conda, miniconda as environment manager.
 
 To set up your virtual environment in the OSC:
-```
+
 #go to OSC home directory
 #open a cluster
 
