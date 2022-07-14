@@ -569,11 +569,14 @@ class segmented_image:
         
     def visualize_a_bbox(self, trait_name):
         
-        
-        trait_prop = self.clean_trait_region(self.mask[trait_name])
-        top, left, bottom, right = trait_prop.bbox
-
-        shape = [(left, top), (right,bottom)]
+        triats = [] #an empty list to fill with as many features as one wants?
+        trait_prop = self.clean_trait_region(self.mask[traits]) #input the list
+        for i in traits:
+            trait_prop = self.clean_trait_region(self.mask[traits[i])
+            top, left, bottom, right = trait_prop.bbox
+            shape = [(left, top), (right,bottom)]
+                                                           
+        img1.rectangle(shape, outline = "red")
   
         # creating new Image object
         img_arr = self.img_arr
