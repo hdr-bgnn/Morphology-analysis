@@ -14,3 +14,6 @@ landmark,12,Most dorsal point of operculum,posterior-most (right-most) part of h
 landmark,13,Most ventral point of operculum,dorsal (lower) part of head that meets the trunk,,
 landmark,14,anterior-most (left-most) part of eye,anterior-most (left-most) part of eye,,
 landmark,15,posterior-most (right-most) part of eye,posterior-most (right-most) part of eye,,
+landmark,16,dorsal-most (upper-most) part of eye,dorsal-most (upper-most) part of eye,,
+landmark,17,ventral-most (lower-most) part of the eye,ventral-most (lower-most) part of the eye,,
+landmark,18,center of eye,centroid of eye,,
