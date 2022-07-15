@@ -145,7 +145,7 @@ To set up your virtual environment in the OSC:
 
 #use conda
 ```
-load module miniconda3
+module load miniconda3
 conda info -e #see what environments you have; you should be on "base"
 conda env create -f morphology_env.yml -n morphology_env
 ```
