@@ -23,15 +23,20 @@ class segmented_image:
                                'pectoral_fin': [254, 0, 254],'head': [254, 254, 254],'eye': [0, 254, 102],
                                'caudal_fin_ray': [254, 102, 102],'alt_fin_ray': [254, 102, 204],
                                'trunk': [0, 124, 124]}
+        self.cutoff = 0.95
         self.img_arr = self.import_image(file_name)
         self.get_channels_mask()
-        self.fish_angle = self.get_fish_angle()
         self.presence_matrix = self.get_presence_matrix()
+        self.fish_angle = self.get_fish_angle()
+        
+    def get_all_measures_landmarks(self):
+        '''
+        Execute the multiple functions that calculate landmarks and measurements
+        '''
         self.landmark = self.all_landmark()
-        self.measurement_with_bbox = self.measure_using_bbox()
-        self.measurement_with_lm = self.measure_using_lm()
-        
-        
+        self.measurement_with_bbox = self.all_measure_using_bbox()
+        self.measurement_with_lm = self.all_measure_using_lm()
+                
     def import_image(self,file_name):
         '''
         Import the image from "image_path" and convert to np.array astype uint8 (0-255)
@@ -96,17 +101,6 @@ class segmented_image:
         
         return image_align
     
-    def visualize_trait(self, trait):
-        
-        mask = self.mask
-        trait_color_dict = self. trait_color_dict
-        
-        if trait in list(trait_color_dict.keys()):
-            return Image.fromarray(mask[trait]*255)
-            
-        else:
-            print(f'trait {trait} is not reference')
-    
     def remove_holes(self, image):
         
         seed = np.copy(image)
@@ -122,7 +116,7 @@ class segmented_image:
         Find the biggest region
         return region_trait
         '''
-        
+        percent_cutoff = self.cutoff
         # remove hole/fill empty area
         trait_filled = self.remove_holes(trait_mask)
         
@@ -136,7 +130,7 @@ class segmented_image:
             # Get the biggest instance(blob) of the trait
             biggest_region = sorted(trait_region, key=lambda r: r.area, reverse=True)[0]
             percent = biggest_region.area/total_area
-            if percent >=percent_cut:
+            if percent >=percent_cutoff:
                 trait_region = biggest_region                
             else:
                 trait_region =[]
@@ -310,10 +304,19 @@ class segmented_image:
         Calculate of the landmark
         front, back, top, bottom, center, new_mask = self.landmark_generic(trait_name)
         '''
-        landmark={}
+        cutoff =  self.cutoff
+        presence_matrix = self.presence_matrix
+        
+        # initialize a dictionnary with keys and empty lists as value
+        landmark={str(k):[] for k in range(1,19)}
+
         #eye
-        landmark['14'], landmark['15'], landmark['16'], landmark['17'], center_eye, _ = self.landmark_generic('eye')     
-        landmark['18'] = (round(center_eye[0]), round(center_eye[1]))
+        if presence_matrix['eye']['percentage']>=cutoff:
+            
+            landmark['14'], landmark['15'], landmark['16'], landmark['17'], center_eye, _ = self.landmark_generic('eye')
+            landmark['18'] = (round(center_eye[0]), round(center_eye[1]))
+            
+            
         # head
         landmark['1'], landmark['12'], landmark['2'] , landmark['13'], _, new_mask_head = self.landmark_generic('head')
         
@@ -329,8 +332,7 @@ class segmented_image:
         landmark['10'],_ , _,_, _, _ = self.landmark_generic('pelvic_fin')
         landmark['9'], _, landmark['8'] , _, _, _ = self.landmark_generic('anal_fin')
         
-        
-        # reorder the key 
+        # reorder the keys of the dictionnary 
         new_landmark={}
         list_order = [str(i) for i in range(1,19)]
         for key in list_order:
@@ -352,7 +354,7 @@ class segmented_image:
         if eye_region:
             return eye_region.area
         else:
-            return 'None'
+            return 0
     
     def measure_head_area(self):
         '''
@@ -365,7 +367,7 @@ class segmented_image:
         if head_region:
             return head_region.area
         else:
-            return 'None' 
+            return 0 
     
     def measure_eye_head_ratio(self):
         '''
@@ -374,12 +376,13 @@ class segmented_image:
         2- Area eye after cleaning and filing hole
         3- ratio
         '''
-        eye_areaa = measure_eye_area()
+        eye_area = measure_eye_area()
         head_area = measure_head_area()
         
-        eye_head_ratio = eye_area/head_area
+        if eye_area>0 and head_area>0:
+            eye_head_ratio = eye_area/head_area
         
-        return eye_head_ratio    
+        return round(eye_head_ratio,2)    
         
     def measure_eye_diameter(self):        
         '''
@@ -387,22 +390,25 @@ class segmented_image:
         (area/pi)^1/2
         '''
         mask = self.mask
+        eq_diameter = 0
         eye_region = self.clean_trait_region(mask['eye'])
+        if  eye_region:   
+            eq_diameter = eye_region.equivalent_diameter_area
             
-        eq_diameter = eye_region.equivalent_diameter_area
-            
-        return eq_diameter    
+        return round(eq_diameter,2)    
      
     def measure_head_length(self):
         '''
         Measure vertical length of the head passing by the center of the eye
         '''
+        
         landmark = self.landmark
         p_2 = landmark['2']
         p_15 = landmark['15']
+        # IF p_2 or p_15 get_distance will return 0
         head_length = self.get_distance(p_2,p_15)
         
-        return head_length
+        return round(head_length,2)
     
     def calculate_triangle_area(self, point_1, point_2, point_3):
         
@@ -415,7 +421,7 @@ class segmented_image:
 
         # calculate the area
         area = (s*(s-a)*(s-b)*(s-c)) ** 0.5
-        return area
+        return round(area,2)
     
     def measure_head_length(self):
         '''
@@ -427,38 +433,46 @@ class segmented_image:
         # head
         _, _, _, _, _, new_mask_head = self.landmark_generic('head')
         # head length, vertical line of the head passing by the center of the eye
-        row_eye = round(center_eye[0])
         
-        head_hori_line = new_mask_head[row_eye,:]
-        index_hori = np.where(head_hori_line == 1)[0]
+        if center_eye and np.any(new_mask_head):
+            row_eye = round(center_eye[0])
         
-        # Get start and end of the horizontal line to check
-        start_h = (row_eye,np.max(index_hori))
-        end_h = (row_eye,np.min(index_hori))
+            head_hori_line = new_mask_head[row_eye,:]
+            index_hori = np.where(head_hori_line == 1)[0]
         
-        head_length = np.count_nonzero( head_hori_line)
+            # Get start and end of the horizontal line to check
+            start_h = (row_eye,np.max(index_hori))
+            end_h = (row_eye,np.min(index_hori))
+        
+            head_length = np.count_nonzero( head_hori_line)
         
         return head_length, start_h, end_h
    
     def measure_head_depth(self):
         '''
-        Measure horizontal length of the head passing by the center of the eye
+        Measure horizontal length of the head passing through the center of the eye
         '''
+        head_depth = 'None'
+        start_v = 'None'
+        end_v = 'None'
+        
         #eye
         _, _, _, _, center_eye, _ = self.landmark_generic('eye')     
         # head
         _, _, _, _, _, new_mask_head = self.landmark_generic('head')
         
-        # head depth, horizontal line of the head passing by the center of the eye
-        col_eye = round(center_eye[1])
+        if center_eye and np.any(new_mask_head):
         
-        head_vert_line = new_mask_head[:,col_eye]
+            # head depth, horizontal line of the head passing by the center of the eye
+            col_eye = round(center_eye[1])
         
-        index_verti = np.where(head_vert_line == 1)[0]
-        start_v = (np.max(index_verti),col_eye)
-        end_v = (np.min(index_verti),col_eye)
+            head_vert_line = new_mask_head[:,col_eye]
         
-        head_depth = np.count_nonzero(head_vert_line)
+            index_verti = np.where(head_vert_line == 1)[0]
+            start_v = (np.max(index_verti),col_eye)
+            end_v = (np.min(index_verti),col_eye)
+        
+            head_depth = np.count_nonzero(head_vert_line)
     
         return head_depth, start_v, end_v
     
@@ -479,7 +493,7 @@ class segmented_image:
     
         return body_length
 
-    def measure_using_lm(self):        
+    def all_measure_using_lm(self):        
         '''
         Collect all the measurment for the fish that using mainly landmarks
         '''
@@ -487,19 +501,19 @@ class segmented_image:
         measure={'SL_lm':'None', 'EA':'None', 'HA':'None', 'ED':'None', 'HL_lm':'None', 'pOD_lm':'None' }
         # Standard Length (body length)
         if landmark['1'] and landmark['6']:
-            measure['SL_lm'] = self.get_distance(landmark['1'],landmark['6'])
+            measure['SL_lm'] = round(self.get_distance(landmark['1'],landmark['6']),2)
         # Eye Area
-        measure['EA'] = int(self.measure_eye_area())
+        measure['EA'] = self.measure_eye_area()
         # Head area
         measure['HA'] = self.measure_head_area()
         # Eye Diameter
-        measure['ED'] = self.measure_eye_diameter()
+        measure['ED'] = round(self.measure_eye_diameter(),2)
         # Head Length
         if landmark['1'] and landmark['12']:
-            measure['HL_lm'] = self.get_distance(landmark['1'],landmark['12'])
+            measure['HL_lm'] = round(self.get_distance(landmark['1'],landmark['12']),2)
         # preObital Depth
         if landmark['1']and landmark['14']:
-            measure['pOD_lm'] = self.get_distance(landmark['1'],landmark['14'])
+            measure['pOD_lm'] = round(self.get_distance(landmark['1'],landmark['14']),2)
             
         return measure    
     
@@ -513,10 +527,10 @@ class segmented_image:
         Combine head and trunk and measure bbox length
         '''
         standard_length = "None"
-        head_eye_trunk = self.combine_trait_mask(['head','eye','trunk'])
-        if np.any(head_eye_trunk):
+        head_trunk = self.combine_trait_mask(['head','trunk'])
+        if np.any(head_trunk):
             
-            trait_region= self.clean_trait_region(head_eye_trunk)
+            trait_region= self.clean_trait_region(head_trunk)
             min_row, min_col, max_row, max_col = trait_region.bbox # (up, left, bottom, right) <=> (min_row, min_col, max_row, max_col)
             standard_length = max_col-min_col
             
@@ -557,20 +571,7 @@ class segmented_image:
             
         return pOD_bbox
     
-    def measure_body_depth(self):
-        '''
-        Measure height of bounding box of the trunk
-        '''
-        body_depth = "None"
-        presence_matrix = self.presence_matrix
-        if presence_matrix['trunk']['number']>=1:
-            trunk_region = self.clean_trait_region(self.mask['trunk'])
-            xb0, yb0, xb1, yb1 = trunk_region.bbox
-            body_depth = xb1-xb0
-        
-        return body_depth
-    
-    def measure_using_bbox(self):
+    def all_measure_using_bbox(self):
         '''
         Collect the measurment for the fish for Meghan paper
         '''
@@ -598,7 +599,16 @@ class segmented_image:
 ############################
 # Visualization function
 ############################
-
+    def visualize_trait(self, trait):
+        
+        mask = self.mask
+        trait_color_dict = self. trait_color_dict
+        
+        if trait in list(trait_color_dict.keys()):
+            return Image.fromarray(mask[trait]*255)
+            
+        else:
+            print(f'trait {trait} is not reference')
     def visualize_landmark(self):
             
         landmark = self.all_landmark()
@@ -611,6 +621,7 @@ class segmented_image:
         fnt = ImageFont.load_default()
         for i,(k,v) in enumerate(landmark.items()):
             
+            # landmark exist draw it on the image
             if v:
                 row,col = v
                 xy = [(col-9,row-9),(col+9,row+9)]
