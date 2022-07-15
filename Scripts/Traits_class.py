@@ -25,22 +25,25 @@ class segmented_image:
                                'trunk': [0, 124, 124]}
         self.img_arr = self.import_image(file_name)
         self.get_channels_mask()
+        self.fish_angle = self.get_fish_angle()
         self.presence_matrix = self.get_presence_matrix()
         self.landmark = self.all_landmark()
-        self.measurement = self.all_measure()
+        self.measurement_with_bbox = self.measure_using_bbox()
+        self.measurement_with_lm = self.measure_using_lm()
+        
         
     def import_image(self,file_name):
         '''
-        import the image from "image_path" and convert to np.array astype uint8 (0-255)
+        Import the image from "image_path" and convert to np.array astype uint8 (0-255)
         '''
         img = Image.open(file_name)
         img_arr = np.array(img, dtype=np.uint8)
 
         return img_arr
-
                 
     def get_channels_mask(self):
-        ''' Convert the png image (numpy.ndarray, np.uint8)  (320, 800, 3)
+        ''' 
+        Convert the png image (numpy.ndarray, np.uint8)  (320, 800, 3)
         to a mask_channel (320, 800, 12) Binary map
 
         input
@@ -61,20 +64,34 @@ class segmented_image:
                 mask[trait]=trait_mask.astype("uint8")
                 
         self.mask = mask
-        
+    
+    def get_fish_angle(self):
+        '''
+        Calculate orientation (PCA) of the mask of head + eye + trunk
+        We choose to combine only head eye and trunk because they are the most reliable feature, fins can bias the measurement of the 
+        orientation.
+        return value in degree
+        '''
+        angle_deg = "None"
+        head_eye_trunk = self.combine_trait_mask(['head','eye','trunk'])
+        if np.any(head_eye_trunk):
+            
+            trait_region = self.clean_trait_region(head_eye_trunk)
+            angle_rad = trait_region.orientation
+            angle_deg = (90-angle_rad*180/math.pi)
+            
+        return angle_deg
+    
     def align_fish(self):
         '''
-        development
+        Development
         To align the fish horizontally
         in order to get landmark 5 and 6
         '''
         
         img_arr = self.img_arr
-        traits_to_combine = list(self.trait_color_dict.keys())[1:]
-        combine_mask  = self.combine_trait_mask(traits_to_combine)
-        region = self.clean_trait_region(combine_mask)
-        angle_rad = region.orientation
-        angle_deg = (90-angle_rad*180/math.pi)
+        angle_deg = self.fish_angle
+        
         image_align = Image.fromarray(img_arr).rotate(angle_deg)
         
         return image_align
@@ -99,7 +116,7 @@ class segmented_image:
         return filled
    
     
-    def clean_trait_region(self, trait_mask, percent_cut = 0.5):
+    def clean_trait_region(self, trait_mask, percent_cut = 0.95):
         '''
         Clean the mask_trait (remove holes)
         Find the biggest region
@@ -214,54 +231,10 @@ class segmented_image:
         #combo_cleaned = self.remove_holes(combo)
         
         return combo
-    
-    def get_body_len(self):
-        '''
-        body length from snout to back to the trunk
-        1- Combine head and trunk
-        2- Create a clean trait region clean_trait_region
-        3- Measure distance long axis, bbox
-        '''
-        head_trunk = self.combine_trait_mask()
-        trait_region= self.clean_trait_region(head_trunk)
-        orientation = trait_region.orientation
-        xb0, yb0, xb1, yb1 = trait_region.bbox
-        len1 =(yb1-yb0)/math.sin(orientation)
-        bbox_len = yb1-yb0
-        return len1, bbox_len
         
-    def visualize_major_minor(self):
-        
-        trait_mask = self.combine_trait_mask()
-        trait_region= self.clean_trait_region(trait_mask)
-        x0, y0 = trait_region.centroid
-        orientation = trait_region.orientation
-        xb0, yb0, xb1, yb1 = trait_region.bbox
-        
-        # Drawing object
-        # Create rgb image
-        trait_mask_rgb = np.stack((trait_mask, trait_mask, trait_mask), axis=2)
-        #R = np.repeat(mask_line[:,:,np.newaxis],3, axis=2)
-        img = Image.fromarray(trait_mask_rgb*255)
-        img1 = ImageDraw.Draw(img)
-        
-        # Long axis
-        x2 = x0 - 0.5 * (yb1-yb0)/math.tan(orientation)
-        x1 = x0 + 0.5 * (yb1-yb0)/math.tan(orientation)
-        long_axis = [(yb0, x2), (yb1, x1)]
-        img1.line(long_axis, fill ="red", width = 2)
- 
-        
-        # Short axis
-        x1t = x0 + math.sin(orientation) * 0.5 * trait_region.axis_minor_length
-        y1t = y0 - math.cos(orientation) * 0.5 * trait_region.axis_minor_length
-        short_axis = [(y0, x0), (y1t, x1t)]        #img1.line(shape1, fill ="red", width = 2)
-        img1.line(short_axis, fill ="red", width = 2)
-        
-        # Display the image created
-        img.show()
-        
-                
+#######################
+# Measure the landamrks    
+#######################
     def landmark_generic(self, trait_name):
         '''
         Identify landmark of a trait (trait_name)
@@ -359,13 +332,16 @@ class segmented_image:
         
         # reorder the key 
         new_landmark={}
-        list_order = [str(i) for i in range(1,16)]
+        list_order = [str(i) for i in range(1,19)]
         for key in list_order:
             new_landmark[key] = landmark[key]                     
                                 
         return new_landmark
-
     
+####################################
+# Calculate measurements using landmarks
+####################################
+
     def measure_eye_area(self):
         '''
         Calculate eye area after cleaning and filing hole
@@ -404,8 +380,7 @@ class segmented_image:
         eye_head_ratio = eye_area/head_area
         
         return eye_head_ratio    
-    
-    
+        
     def measure_eye_diameter(self):        
         '''
         Calculate eye equivalent diameter : diameter of the disk of the same area
@@ -442,42 +417,50 @@ class segmented_image:
         area = (s*(s-a)*(s-b)*(s-c)) ** 0.5
         return area
     
+    def measure_head_length(self):
+        '''
+        Measure horizontal length of the head passing by the center of the eye
+        '''
+        #eye
+        _, _, _, _, center_eye, _ = self.landmark_generic('eye')     
+
+        # head
+        _, _, _, _, _, new_mask_head = self.landmark_generic('head')
+        # head length, vertical line of the head passing by the center of the eye
+        row_eye = round(center_eye[0])
+        
+        head_hori_line = new_mask_head[row_eye,:]
+        index_hori = np.where(head_hori_line == 1)[0]
+        
+        # Get start and end of the horizontal line to check
+        start_h = (row_eye,np.max(index_hori))
+        end_h = (row_eye,np.min(index_hori))
+        
+        head_length = np.count_nonzero( head_hori_line)
+        
+        return head_length, start_h, end_h
+   
     def measure_head_depth(self):
         '''
-        Measure vertical length of the head passing by the center of the eye
+        Measure horizontal length of the head passing by the center of the eye
         '''
         #eye
         _, _, _, _, center_eye, _ = self.landmark_generic('eye')     
-
         # head
         _, _, _, _, _, new_mask_head = self.landmark_generic('head')
-        # landmark 15
-        # head length, vertical line of the head passing by the center of the eye
-        row_eye = round(center_eye[0])
         
-        head_hori_line = new_mask_head[row_eye,:]
-        head_depth = np.count_nonzero( head_hori_line)
-    
-        return head_depth
-
-    def measure_head_depth_2(self):
-        '''
-        Measure height of bbox
-        '''
-        #eye
-        _, _, _, _, center_eye, _ = self.landmark_generic('eye')     
-
-        # head
-        _, _, _, _, _, new_mask_head = self.landmark_generic('head')
-        # landmark 15
-        # head length, vertical line of the head passing by the center of the eye
-        row_eye = round(center_eye[0])
+        # head depth, horizontal line of the head passing by the center of the eye
+        col_eye = round(center_eye[1])
         
-        head_hori_line = new_mask_head[row_eye,:]
-        head_depth = np.count_nonzero( head_hori_line)
+        head_vert_line = new_mask_head[:,col_eye]
+        
+        index_verti = np.where(head_vert_line == 1)[0]
+        start_v = (np.max(index_verti),col_eye)
+        end_v = (np.min(index_verti),col_eye)
+        
+        head_depth = np.count_nonzero(head_vert_line)
     
-        return head_depth
-    
+        return head_depth, start_v, end_v
     
     def measure_body_length(self):
         '''
@@ -495,6 +478,84 @@ class segmented_image:
             body_length = yb1-yb0
     
         return body_length
+
+    def measure_using_lm(self):        
+        '''
+        Collect all the measurment for the fish that using mainly landmarks
+        '''
+        landmark = self.landmark
+        measure={'SL_lm':'None', 'EA':'None', 'HA':'None', 'ED':'None', 'HL_lm':'None', 'pOD_lm':'None' }
+        # Standard Length (body length)
+        if landmark['1'] and landmark['6']:
+            measure['SL_lm'] = self.get_distance(landmark['1'],landmark['6'])
+        # Eye Area
+        measure['EA'] = int(self.measure_eye_area())
+        # Head area
+        measure['HA'] = self.measure_head_area()
+        # Eye Diameter
+        measure['ED'] = self.measure_eye_diameter()
+        # Head Length
+        if landmark['1'] and landmark['12']:
+            measure['HL_lm'] = self.get_distance(landmark['1'],landmark['12'])
+        # preObital Depth
+        if landmark['1']and landmark['14']:
+            measure['pOD_lm'] = self.get_distance(landmark['1'],landmark['14'])
+            
+        return measure    
+    
+########################
+# Measurement using bbox
+########################
+
+    def measure_SL_bbox(self):
+        '''
+        Measure SL (Standard Length), length of the bounding box of head + trunk
+        Combine head and trunk and measure bbox length
+        '''
+        standard_length = "None"
+        head_eye_trunk = self.combine_trait_mask(['head','eye','trunk'])
+        if np.any(head_eye_trunk):
+            
+            trait_region= self.clean_trait_region(head_eye_trunk)
+            min_row, min_col, max_row, max_col = trait_region.bbox # (up, left, bottom, right) <=> (min_row, min_col, max_row, max_col)
+            standard_length = max_col-min_col
+            
+        return standard_length         
+           
+    def measure_length_bbox(self, trait_name):
+        '''
+        Measure the length of bbox of the trait_name
+        '''
+        mask = self.mask[trait_name]
+        # remove the hole and take the biggest blob
+        trait_region = self.clean_trait_region(mask)
+        trait_length_bbox = "None"
+        
+        if trait_region:
+            minrow, mincol, maxrow, maxcol = trait_region.bbox
+            
+            trait_length_bbox = maxcol-mincol
+        
+        return trait_length_bbox
+
+    def measure_pOD_bbox(self):
+        '''
+        Measure preorbital Depth using left boubdary of bbox of head and eye
+        '''
+        pOD_bbox = "None"
+        mask_head = self.mask['head']
+        mask_eye = self.mask['eye']
+        head_region = self.clean_trait_region(mask_head)
+        eye_region = self.clean_trait_region(mask_eye)
+        
+        if head_region and eye_region: 
+            
+            up_h, left_h, bot_h, right_h = head_region.bbox
+            up_e, left_e, bot_e, right_e = eye_region.bbox
+        
+            pOD_bbox = int(left_e - left_h)
+            
+        return pOD_bbox
     
     def measure_body_depth(self):
         '''
@@ -509,43 +570,35 @@ class segmented_image:
         
         return body_depth
     
-    def all_measure(self):        
+    def measure_using_bbox(self):
         '''
-        Collect all the measurment for the fish
+        Collect the measurment for the fish for Meghan paper
         '''
-        landmark = self.landmark
-        measure={'SL':'None', 'EA':'None', 'HAt':'None', 'HAp':'None', 'HCL':'None', 'ED':'None', 'HL':'None', 'HD':'None','pOD':'None', }
-        # Standard Length (body length)
-        if landmark['1'] and landmark['6']:
-            measure['SL'] = self.get_distance(landmark['1'],landmark['6'])
-        # Eye Area
-        measure['EA'] = int(self.measure_eye_area())
-        # Head Area triangle
-        if landmark['1'] and landmark['2'] and landmark['13']:
-            measure['HAt'] = self.calculate_triangle_area(landmark['1'],landmark['2'],landmark['13'])
-        # Head area
-        measure['HAp'] = self.measure_head_area()
-        # Head to caudal line
-        measure['HCL'] = "WIP"
-        # Eye Diameter
-        measure['ED'] = self.measure_eye_diameter()
-        # Head Length
-        if landmark['1'] and landmark['12']:
-            measure['HL'] = self.get_distance(landmark['1'],landmark['12'])
-        # Head Depth
-        if landmark['2'] and landmark['13']:
-            measure['HD'] = self.get_distance(landmark['2'],landmark['13'])
-        # preObital Depth
-        if landmark['1']and landmark['14']:
-            measure['pOD'] = self.get_distance(landmark['1'],landmark['14'])
-        # Body length
-        measure['BL'] = self.measure_body_length()
+        measure={'SL_bbox':'None', 'HL_bbox':'None', 'ED_bbox':'None', 'HD_eye':'None','pOD_bbox':'None' }
         
-        # Body depth
-        measure['BD'] = self.measure_body_depth()
-            
+        # SL standart length, length bbox of head+trunk
+        
+        measure['SL_bbox'] =  self.measure_SL_bbox()
+        
+        # HL Head Length, length of bbox of the head
+        measure['HL_bbox'] = self.measure_length_bbox('head')
+        # ED Eye Diameter
+        measure['ED_bbox'] = self.measure_length_bbox('eye')
+        # Head Depth, height of the line going through the middle of the eye 
+        measure['HD_eye'], start, end = self.measure_head_depth()
+
+        # preorbital Depth
+        measure['pOD_bbox'] = self.measure_pOD_bbox()
+        
+        # fish angle in case of connection
+        measure['fish_angle'] = self.fish_angle
+         
         return measure
-        
+    
+############################
+# Visualization function
+############################
+
     def visualize_landmark(self):
             
         landmark = self.all_landmark()
@@ -559,32 +612,82 @@ class segmented_image:
         for i,(k,v) in enumerate(landmark.items()):
             
             if v:
-                x,y = v
-                xy = [(y-9,x-9),(y+9,x+9)]
+                row,col = v
+                xy = [(col-9,row-9),(col+9,row+9)]
                 img1.ellipse(xy, fill='gray', outline=None, width=1)
                 
-                img1.text((y-6, x-6), k, font=fnt, fill='black')
+                img1.text((col-6, row-6), k, font=fnt, fill='black')
             # Display the image created
         return img
         
     def visualize_a_bbox(self, trait_name):
-        
-        
-        trait_prop = self.clean_trait_region(self.mask[trait_name])
-        top, left, bottom, right = trait_prop.bbox
 
-        shape = [(left, top), (right,bottom)]
-  
         # creating new Image object
         img_arr = self.img_arr
         img = Image.fromarray(img_arr)
         img1 = ImageDraw.Draw(img)
-  
-        # create rectangle image
-        img1 = ImageDraw.Draw(img)  
+        
+        # prepare the bbox for the "trait_name"
+        trait_prop = self.clean_trait_region(self.mask[trait_name])
+        top, left, bottom, right = trait_prop.bbox
+
+        shape = [(left, top), (right,bottom)]
+        
+        # create rectangle image 
         img1.rectangle(shape, outline ="red")
         
         # Display the image created
         return img
+    
+    def visualize_multi_bbox(self, list_trait_name):
 
+        # creating new Image object
+        img_arr = self.img_arr
+        img = Image.fromarray(img_arr)
+        img1 = ImageDraw.Draw(img)
+        
+        for trait_name in list_trait_name:
+            
+            # prepare the bbox for the "trait_name"
+            trait_prop = self.clean_trait_region(self.mask[trait_name])
+            top, left, bottom, right = trait_prop.bbox
+
+            shape = [(left, top), (right,bottom)]
+        
+            # create rectangle image 
+            img1.rectangle(shape, outline ="red")
+        
+        # Display the image created
+        return img
+
+    def visualize_major_minor(self):
+        
+        trait_mask = self.combine_trait_mask()
+        trait_region= self.clean_trait_region(trait_mask)
+        x0, y0 = trait_region.centroid
+        orientation = trait_region.orientation
+        xb0, yb0, xb1, yb1 = trait_region.bbox
+        
+        # Drawing object
+        # Create rgb image
+        trait_mask_rgb = np.stack((trait_mask, trait_mask, trait_mask), axis=2)
+        #R = np.repeat(mask_line[:,:,np.newaxis],3, axis=2)
+        img = Image.fromarray(trait_mask_rgb*255)
+        img1 = ImageDraw.Draw(img)
+        
+        # Long axis
+        x2 = x0 - 0.5 * (yb1-yb0)/math.tan(orientation)
+        x1 = x0 + 0.5 * (yb1-yb0)/math.tan(orientation)
+        long_axis = [(yb0, x2), (yb1, x1)]
+        img1.line(long_axis, fill ="red", width = 2)
+ 
+        
+        # Short axis
+        x1t = x0 + math.sin(orientation) * 0.5 * trait_region.axis_minor_length
+        y1t = y0 - math.cos(orientation) * 0.5 * trait_region.axis_minor_length
+        short_axis = [(y0, x0), (y1t, x1t)]        #img1.line(shape1, fill ="red", width = 2)
+        img1.line(short_axis, fill ="red", width = 2)
+        
+        # Display the image created
+        return img
 

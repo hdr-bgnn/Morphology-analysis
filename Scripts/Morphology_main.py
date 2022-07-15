@@ -45,7 +45,10 @@ def main(input_file, metadata_file, output_measure, output_landmark, output_pres
          output_lm_image=None):
     
     img_seg = tc.segmented_image(input_file)
-    measurement = img_seg.measurement
+    measurement_bbox = img_seg.measurement_with_bbox
+    measurement_lm = img_seg.measurement_with_lm
+    # combine the 2 types of measurement
+    measurement = {**measurement_bbox, **measurement_lm}
     landmark = img_seg.landmark
     presence_matrix = img_seg.presence_matrix
     
