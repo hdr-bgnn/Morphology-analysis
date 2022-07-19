@@ -1,8 +1,8 @@
 ﻿trait,abbreviation,type,anatomical_definition,code_definition
 standard length using landmarks,SL_lm,distance,length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin,length from #1 to #6
 standard length using bounding box,SL_bbox,distance,length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin,distance between the left-right sides  of a bounding box around the head+eye and trunk
-eye area using pixels,EA_m,area,area of the eye region,area of the eye based on the mask that segmentsthe eye
-head area using pixels,HA_m,area,area of the head region,"area of the head based on the mask that segments the head, including the eye"
+eye area using pixels of mask,EA_m,area,area of the eye region,area of the eye based on the mask that segmentsthe eye
+head area using pixels of mask,HA_m,area,area of the head region,"area of the head based on the mask that segments the head, including the eye"
 head length using landmarks,HL_lm,distance,length from the anterior-most (left-most) part of the head to the posterior-most (right-most) part of the head,length from #1 to #12
 head length using bounding box,HL_bbox,distance,length from the anterior-most (left-most) part of the head to the posterior-most (right-most) part of the head,distance between the left-right sides  of a bounding box around the head+eye
 preorbital depth using landmarks,pOD_lm,distance,length from the anterior-most (left-most) part of the eye to the anterior-most (left-most)part of the head,length from #1 to #14
