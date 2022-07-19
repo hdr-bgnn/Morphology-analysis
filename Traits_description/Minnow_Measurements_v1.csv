@@ -10,5 +10,5 @@ preorbital depth using bounding box,pOD_bbox,distance,length from the anterior-m
 head depth through midline of the eye,HH_lm,distance,length from the dorsal-most (top) part of the head to the ventral-most (bottom) part of the head through the midline of the eye,length from the dorsal-most (top) part of the head to the ventral-most (bottom) part of the head through landmark #18
 eye diameter using landmarks,ED_lm,distance,length across the eye along the anterior-posterior (left-right) axis,length from #14 to #15
 eye diameter using boudning box,ED_bbox,distance,length across the eye along the anterior-posterior (left-right) axis,distance between the left-right sides  of a bounding box around the eye
-fish angle,Fa_lm,angle,angle of the tilt of the fish from horizontal,angle between the SL_lm and  and the horizontal line of the image
-fish angle,Fa_pca,angle,angle of the tilt of the fish from horizontal,angle between the pca through the midline and the horizontal line of the image
+fish angle using landmarks,Fa_lm,angle,angle of the tilt of the fish from horizontal,angle between the SL_lm and  and the horizontal line of the image
+fish angle using PCA,Fa_pca,angle,angle of the tilt of the fish from horizontal,angle between the pca through the midline and the horizontal line of the image
