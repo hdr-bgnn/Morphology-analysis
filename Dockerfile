@@ -45,7 +45,7 @@ RUN curl -sLo ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-py38
 WORKDIR /pipeline
 
 # Setup pipeline specific scripts
-ENV PATH="/pipeline/Morphology:${PATH}"
+ENV PATH="/pipeline:${PATH}"
 
 ADD Scripts/Traits_class.py /pipeline/Morphology/Traits_class.py
 ADD Scripts/Morphology_main.py /pipeline/Morphology/Morphology_main.py
