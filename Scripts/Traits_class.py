@@ -8,26 +8,29 @@ Class definition for morpholopgy analysis
 Version 1
 """
 import os, sys, math, json
+from operator import sub
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from skimage.measure import label, regionprops
 from skimage.morphology import reconstruction
 
+
 class segmented_image:
     
     def __init__(self, file_name):
         self.file = file_name
-        self.image_name = os.path.split(file_name)[1]     # creates a new empty list for each dog
+        self.image_name = os.path.split(file_name)[1]
+        self.base_name = self.image_name.rsplit('_',1)[0]
         self.trait_color_dict={'background': [0, 0, 0],'dorsal_fin': [254, 0, 0],'adipos_fin': [0, 254, 0],
                                'caudal_fin': [0, 0, 254],'anal_fin': [254, 254, 0],'pelvic_fin': [0, 254, 254],
                                'pectoral_fin': [254, 0, 254],'head': [254, 254, 254],'eye': [0, 254, 102],
                                'caudal_fin_ray': [254, 102, 102],'alt_fin_ray': [254, 102, 204],
                                'trunk': [0, 124, 124]}
-        self.cutoff = 0.95
+        self.cutoff = 0.60
         self.img_arr = self.import_image(file_name)
         self.get_channels_mask()
         self.presence_matrix = self.get_presence_matrix()
-        self.fish_angle = self.get_fish_angle()
+        self.fish_angle = self.get_fish_angle_pca()
         
     def get_all_measures_landmarks(self):
         '''
@@ -36,6 +39,8 @@ class segmented_image:
         self.landmark = self.all_landmark()
         self.measurement_with_bbox = self.all_measure_using_bbox()
         self.measurement_with_lm = self.all_measure_using_lm()
+        self.measurement_with_area = self.all_measure_area()
+        
                 
     def import_image(self,file_name):
         '''
@@ -70,22 +75,26 @@ class segmented_image:
                 
         self.mask = mask
     
-    def get_fish_angle(self):
+    def get_fish_angle_pca(self):
         '''
-        Calculate orientation (PCA) of the mask of head + eye + trunk
-        We choose to combine only head eye and trunk because they are the most reliable feature, fins can bias the measurement of the 
-        orientation.
+        Calculate orientation (PCA) of the mask of whole fish
+        We choose to combine whole fish part and calculate orientation.
         return value in degree
         '''
-        angle_deg = "None"
-        head_eye_trunk = self.combine_trait_mask(['head','eye','trunk'])
-        if np.any(head_eye_trunk):
+        fish_angle = "None"
+        mask = self.mask
+        whole_fish = np.zeros_like(None,dtype="uint8")
+        for i,(k,v) in enumerate(mask.items()):
+                whole_fish = whole_fish +v
+        
+        # Check that the mask is not empty
+        if np.any(whole_fish):
             
-            trait_region = self.clean_trait_region(head_eye_trunk)
+            trait_region = self.clean_trait_region(whole_fish)
             angle_rad = trait_region.orientation
-            angle_deg = (90-angle_rad*180/math.pi)
+            fish_angle = (90-angle_rad*180/math.pi)
             
-        return angle_deg
+        return round(fish_angle,2)
     
     def align_fish(self):
         '''
@@ -110,7 +119,7 @@ class segmented_image:
         return filled
    
     
-    def clean_trait_region(self, trait_mask, percent_cut = 0.95):
+    def clean_trait_region(self, trait_mask):
         '''
         Clean the mask_trait (remove holes)
         Find the biggest region
@@ -450,7 +459,7 @@ class segmented_image:
    
     def measure_head_depth(self):
         '''
-        Measure horizontal length of the head passing through the center of the eye
+        Measure vertical length of the head passing through the center of the eye
         '''
         head_depth = 'None'
         start_v = 'None'
@@ -468,6 +477,7 @@ class segmented_image:
         
             head_vert_line = new_mask_head[:,col_eye]
         
+            # Calculate the start and end of the vertical line, for sanity check
             index_verti = np.where(head_vert_line == 1)[0]
             start_v = (np.max(index_verti),col_eye)
             end_v = (np.min(index_verti),col_eye)
@@ -493,30 +503,72 @@ class segmented_image:
     
         return body_length
 
-    def all_measure_using_lm(self):        
+    def measure_fish_angle_lm(self):
         '''
-        Collect all the measurment for the fish that using mainly landmarks
+        measure fish angle using orientation of the line define by landmark#1 and landmark #6
         '''
         landmark = self.landmark
-        measure={'SL_lm':'None', 'EA':'None', 'HA':'None', 'ED':'None', 'HL_lm':'None', 'pOD_lm':'None' }
-        # Standard Length (body length)
+        fish_angle_lm = None
         if landmark['1'] and landmark['6']:
-            measure['SL_lm'] = round(self.get_distance(landmark['1'],landmark['6']),2)
-        # Eye Area
-        measure['EA'] = self.measure_eye_area()
-        # Head area
-        measure['HA'] = self.measure_head_area()
-        # Eye Diameter
-        measure['ED'] = round(self.measure_eye_diameter(),2)
-        # Head Length
-        if landmark['1'] and landmark['12']:
-            measure['HL_lm'] = round(self.get_distance(landmark['1'],landmark['12']),2)
-        # preObital Depth
-        if landmark['1']and landmark['14']:
-            measure['pOD_lm'] = round(self.get_distance(landmark['1'],landmark['14']),2)
             
-        return measure    
+            # translation to origin
+            trans_to_origin = list(map(sub, landmark['6'], landmark['1']))
+            fish_angle_lm = math.atan2(trans_to_origin[0], trans_to_origin[1])*(180/math.pi)
+            
+        return round(fish_angle_lm,2)
     
+    def all_measure_using_lm(self):        
+        '''
+        Collect all the measurment for the fish that are only using landmarks
+        '''
+        landmark = self.landmark
+        measures_lm={'SL_lm':'None', 'HL_lm':'None','ED_lm':'None', 'HH_lm':'None', 'HH_lm_v2':'None', 'pOD_lm':'None' }
+        # Standard Length (body length), landmark
+        if landmark['1'] and landmark['6']:
+            measures_lm['SL_lm'] = round(self.get_distance(landmark['1'],landmark['6']),2)
+
+        # Head Length, landmark
+        if landmark['1'] and landmark['12']:
+            measures_lm['HL_lm'] = round(self.get_distance(landmark['1'],landmark['12']),2)
+            
+        #Eye Diamter, landmark
+        if landmark['14'] and landmark['15']:
+            measures_lm['ED_lm'] = round(self.get_distance(landmark['14'],landmark['15']),2)
+        
+        if landmark['18']:
+            # Head Height, height of the line going through the middle of the eye landmark #18
+            measures_lm['HH_lm'], start, end = self.measure_head_depth()
+            # Sanity check for the measure of HH_lm using start and end of the vertical line through the eye
+            measures_lm['HH_lm_v2'] = round(self.get_distance(start,end),2)
+            
+        # preObital Depth, landamrk
+        if landmark['1'] and landmark['14']:
+            measures_lm['pOD_lm'] = round(self.get_distance(landmark['1'],landmark['14']),2)
+        
+        # Head Depth, landmark
+        if landmark['2'] and landmark['13']:
+            measures_lm['HD_lm'] = round(self.get_distance(landmark['2'],landmark['13']),2)
+        
+        measures_lm['FA_lm'] = self.measure_fish_angle_lm()
+        
+        return measures_lm    
+
+    def all_measure_area(self):
+        '''
+        Collect measuerements calculate using the area (measure from the skimage.measure.regionprops)
+        '''
+        measure_area = {'EA_m':'None', 'HA_m':'None'}
+        # Eye Area
+        measure_area['EA_m'] = self.measure_eye_area()
+        # Head area
+        measure_area['HA_m'] = self.measure_head_area()
+        
+        return measure_area
+        
+
+        
+        
+        
 ########################
 # Measurement using bbox
 ########################
@@ -575,26 +627,24 @@ class segmented_image:
         '''
         Collect the measurment for the fish for Meghan paper
         '''
-        measure={'SL_bbox':'None', 'HL_bbox':'None', 'ED_bbox':'None', 'HD_eye':'None','pOD_bbox':'None' }
+        measures_bbox={'SL_bbox':'None', 'HL_bbox':'None', 'ED_bbox':'None','pOD_bbox':'None', 'fish_angle':'None' }
         
         # SL standart length, length bbox of head+trunk
         
-        measure['SL_bbox'] =  self.measure_SL_bbox()
+        measures_bbox['SL_bbox'] =  self.measure_SL_bbox()
         
         # HL Head Length, length of bbox of the head
-        measure['HL_bbox'] = self.measure_length_bbox('head')
+        measures_bbox['HL_bbox'] = self.measure_length_bbox('head')
         # ED Eye Diameter
-        measure['ED_bbox'] = self.measure_length_bbox('eye')
-        # Head Depth, height of the line going through the middle of the eye 
-        measure['HD_eye'], start, end = self.measure_head_depth()
+        measures_bbox['ED_bbox'] = self.measure_length_bbox('eye')
 
         # preorbital Depth
-        measure['pOD_bbox'] = self.measure_pOD_bbox()
+        measures_bbox['pOD_bbox'] = self.measure_pOD_bbox()
         
         # fish angle in case of connection
-        measure['fish_angle'] = self.fish_angle
+        measures_bbox['FA_pca'] = self.fish_angle
          
-        return measure
+        return measures_bbox
     
 ############################
 # Visualization function
@@ -609,6 +659,7 @@ class segmented_image:
             
         else:
             print(f'trait {trait} is not reference')
+            
     def visualize_landmark(self):
             
         landmark = self.all_landmark()
