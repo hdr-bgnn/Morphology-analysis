@@ -50,42 +50,46 @@ We use the following descriptions and labels for landmarks and measurements. If 
 ![Fish measurment](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.png)
 
 
-**Landmarks Table**
+**<a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Landmarks_v1.csv">Landmarks Table</a>**
 
-![table_landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Landmarks_v1.csv)
-type     |  landmarkNumber  |  terminology                                 |  position                                                      |  anatomicalDefinition  |  codeDefinition
-----------|------------------|----------------------------------------------|----------------------------------------------------------------|------------------------|----------------
-landmark  |  1               |  Tip of snout                                |  anterior-most (left-most) part of head                        |                        |
-landmark  |  2               |  Beginning of the scales at the dorsal side  |  dorsal (top) of head that meets the trunk                     |                        |
-landmark  |  3               |  Anterior insertion of the dorsal fin        |  anterior-most (left-most) insertion point of dorsal fin       |                        |
-landmark  |  4               |  Posterior insertion of dorsal fin           |  posterior-most (right-most) insertion point of dorsal fin     |                        |
-landmark  |  5               |  Dorsal insertion of the caudal fin          |  anterior/dorsal (upper left) insertion point of caudal fin    |                        |
-landmark  |  6               |  End of vertebral column                     |  midline of caudal fin                                         |                        |
-landmark  |  7               |  Ventral insertion of the caudal fin         |  anterior/ventral (lower left) insertion point of caudal fin   |                        |
-landmark  |  8               |  Posterior insertion of the anal fin         |  posterior-most (right-most) insertion point of anal fin       |                        |
-landmark  |  9               |  Anterior insertion of the anal fin          |  anterior-most (left-most) insertion point of anal fin         |                        |
-landmark  |  10              |  Anterior insertion of the pelvic fin        |  anterior-most (left-most) insertion point of pelvic fin       |                        |
-landmark  |  11              |  Superior insertions of the pectoral fin     |  anterior-most (left most) insertion point of pectoral fin     |                        |
-landmark  |  12              |  Most dorsal point of operculum              |  posterior-most (right-most) part of head                      |                        |
-landmark  |  13              |  Most ventral point of operculum             |  dorsal (lower) part of head that meets the trunk              |                        |
-landmark  |  14              |  anterior-most (left-most) part of eye       |  anterior-most (left-most) part of eye                         |                        |
-landmark  |  15              |  posterior-most (right-most) part of eye     |  posterior-most (right-most) part of eye                       |                        |
+  Landmark_Number  |  Definition  |  codeDefinition  
+----------|------------------|----------------------------------------------
+  1 |  Tip of snout, which is the anterior-most part of head  |  Left-most point of the head mask defined by left boundary of the bbox  
+  2 |  Beginning of the scales at the dorsal side, where the head meets the trunk  |  Top-most point of the head mask defined by top boundary of the bbox  
+  3 |  Anterior insertion of the dorsal fin  |  Left-most point of the dorsal fin mask defined by left boundary of the bbox  
+  4 |  Posterior insertion of dorsal fin  |  Furthest bottom point of the dorsal fin defined by bottom boundary of the bbox  
+  5 |  Dorsal insertion of the caudal fin  |  Left-most point of the upper half of the caudal fin mask (split through the midline) using the bbox  
+  6 |  End of vertebral column, at the midline of the caudal fin  |  Right-most part of the trunk mask defined by the right boundary of the bbox  
+  7 |  Ventral insertion of the caudal fin  |  Left-most point of the lower half of the caudal fin mask (split through the midline) using the bbox  
+  8 |  Posterior insertion of the anal fin  |  Top-most point of the anal fin mask defined by top boundary of the bbox  
+  9 |  Anterior insertion of the anal fin  |  Left-most point of the anal fin mask defined by left boundary of the bbox  
+  10 |  Anterior insertion of the pelvic fin  |  Left-most point of the pelvic fin mask defined by left boundary of the bbox  
+  11 |  Anterior insertion of the pectoral fin  |  Left-most point of the pectoral fin mask defined by left boundary of the bbox  
+  12 |  Most dorsal point of operculum, which is the posterior-most part of the head  |  Right-most part of the head mask defined by the right boundary of the bbox  
+  13 |  Most ventral point of operculum, where the head meets the trunk  |  Furthest bottom point of the head mask defined by bottom boundary of the bbox  
+  14 |  Anterior-most (left-most) part of eye  |  Left-most point of the eye mask defined by left boundary of the bbox  
+  15 |  Posterior-most (right-most) part of eye  |  Right-most part of the eye mask defined by the right boundary of the bbox  
+  16 |  Dorsal-most (upper) part of eye)  |  Top-most point of the eye mask defined by top boundary of the bbox  
+  17 |  Ventral-most (lower) part of eye  |  Furthest bottom point of the eye mask defined by bottom boundary of the bbox  
+  18 |  Center (centroid) of eye  |  Center of the eye mask  
   
-**Measurement Table**  
-![table_Measurements](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.csv)
+**<a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.csv">Measurement Table</a>**  
 
-trait                            |  abbreviation  |  type      |  anatomicalDefinition                                                                                                                          |  codeDefinition
-----------------------------------|----------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------------
-standard length                   |   SL           |  distance  |  length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin                                                |
-eye area                          |   EA           |  area      |  area of the eye                                                                                                                               |
-head area, triangle               |   HAt          |  area      |  area of head as outlined by three points: tip of snout (landmark #1), back of head (landmark #2), and ventral portion of head (landmark #13)  |
-head area, pixels                 |   HAp          |  area      |  area of head based on number of pixels                                                                                                        |
-eye area to head area             |   EHA          |  area      |  ratio of eye area to head area                                                                                                                |
-head-to-caudal length             |   HCL          |  distance  |  length along the dorsal side (top) from the back of the head (landmark #2) to the end of the peduncle (landmark #5)                           |
-eye diameter                      |  ED            |  distance  |  length across the eye along the anterior-posterior (left-right) axis (landmarks #14 & #15)                                                    |
-head length                       |  HL            |  distance  |  length from the anterior-most (left-most) part of the head (landmark #1) to the posterior-most (right-most) part of the head (landmark #12)   |
-head depth                        |  HD            |  distance  |  length from the dorsal-most (top) part of the head (landmark #2) to the ventral-most (bottom) part of the head (landmark #13)                 |
-snout length or preorbital depth  |  pOD           |  distance  |  length from the anterior-most (left-most) part of the eye (landmark #14) to the anterior-most (left-most)part of the head (landmark #1)       |
+  Type  |  Measurement  |  Abbreviation  |  Definition  
+--------------------|----------------|------------|-----------------------------------------------
+  distance  |  standard length using landmarks  |  SL_lm  |  length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin (length from #1 to #6)	
+  distance  |  standard length using bounding box  |  SL_bbox  |  length from the tip of the snout to the posterior-most part of trunk that meets the caudal fin (distance between the left-right sides of a bounding box around the head+eye and trunk)  
+  area      |  eye area using pixels of mask  |  EA_m  |  area of the eye region (area of the eye based on the mask that segments the eye)  
+  area      |  head area using pixels of mask  |  HA_m  |  area of the head region (area of the head based on the mask that segments the head, including the eye)  
+  distance  |  head length using landmarks  |  HL_lm  |  length from the anterior-most part of the head to the posterior-most part of the head (length from #1 to #12)  
+  distance  |  head length using bounding box  |  HL_bbox  |  length from the anterior-most part of the head to the posterior-most part of the head (distance between the left-right sides of a bounding box around the head+eye)  
+  distance  |  preorbital depth using landmarks  |  pOD_lm  |  length from the anterior-most part of the eye to the anterior-most part of the head (length from #1 to #14)  
+  distance  |  preorbital depth using bounding box  |  pOD_bbox  |  length from the anterior-most part of the eye to the anterior-most part of the head (distance between the left edge of the head bounding box and the eye bounding box)  
+  distance  |  head depth through midline of the eye  |  HH_lm  |  length from the dorsal-most (top) part of the head to the ventral-most (bottom) part of the head through the midline of the eye (length from the dorsal-most (top) part of the head to the ventral-most (bottom) part of the head through landmark #18)  
+  distance  |  eye diameter using landmarks  |  ED_lm  |  length across the eye along the anterior-posterior (left-right) axis (length from #14 to #15)  
+  distance  |  eye diameter using landmarks  |  ED_bbox  |  length across the eye along the anterior-posterior (left-right) axis (distance between the left-right sides of a bounding box around the eye)  
+  angle  |  fish angle using landmarks  |  Fa_lm  |  angle of the tilt of the fish from horizontal (angle between the SL_lm and and the horizontal line of the image)  
+  angle  |  fish angle using PCA  |  Fa_pca  |  angle of the tilt of the fish from horizontal (angle between the pca through the midline of the fish mask and the horizontal line of the image)  
   
 ## 3- Trait measurement extraction
 
@@ -106,15 +110,18 @@ We extract traits three ways:
 
 #### 1) Using the landmarks
 These trait classes have the suffix "_lm" to denote the method of extraction. 
+
 The lengths (in pixels) are calculated as the distance between two landmarks (described in the "Definition" column of the trait description csvs).
 
 #### 2) Using the bbox (bounding box)
 These trait classes have the suffix "_bbox" to denote the method of extraction.
+
 The lengths (in pixels) are calculated as the distance of a perpindicular line between the edges (either vertical or horizontal) of the bbox.
 
 #### 3) Using the mask
 These trait classes have the suffix "_m" to denote the method of extraction.
-These areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of the ![Minnow_Measurements_v1.csv](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Measurements_v1.csv).
+
+These areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of the <a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Measurements_v1.csv">Minnow_Measurements_v1.csv</a>.
 
 ### Usage and main function: 
 
