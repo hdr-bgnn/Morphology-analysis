@@ -45,14 +45,14 @@ The approach that we use for extracting traits is the following:
 We use the following descriptions and labels for landmarks and measurements. If you had more features in the class and codes to extract landmarks or measurement, please create an issue or make a pull request to update the image description and corresponding table.
 
 
-![Fish landmarks](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Landmarks%20(trimmed%201Jul2022).png)
+![Fish landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Landmarks_v1.png)
 
-![Fish measurment](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/Minnow%20Length%20Traits%20(trimmed%2028Jun2022).png)
+![Fish measurment](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.png)
 
 
 **Landmarks Table**
 
-![table_landmarks](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/MinnowLandmarks%20(trimmed%2028Jun2022).csv)
+![table_landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Landmarks_v1.csv)
 type     |  landmarkNumber  |  terminology                                 |  position                                                      |  anatomicalDefinition  |  codeDefinition
 ----------|------------------|----------------------------------------------|----------------------------------------------------------------|------------------------|----------------
 landmark  |  1               |  Tip of snout                                |  anterior-most (left-most) part of head                        |                        |
@@ -72,7 +72,7 @@ landmark  |  14              |  anterior-most (left-most) part of eye       |  a
 landmark  |  15              |  posterior-most (right-most) part of eye     |  posterior-most (right-most) part of eye                       |                        |
   
 **Measurement Table**  
-![table_Measurements](https://github.com/hdr-bgnn/minnowTraits/blob/main/Traits/MinnowMeasurements%20(trimmed%2028Jun2022).csv)
+![table_Measurements](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.csv)
 
 trait                            |  abbreviation  |  type      |  anatomicalDefinition                                                                                                                          |  codeDefinition
 ----------------------------------|----------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------------
@@ -87,7 +87,7 @@ head length                       |  HL            |  distance  |  length from t
 head depth                        |  HD            |  distance  |  length from the dorsal-most (top) part of the head (landmark #2) to the ventral-most (bottom) part of the head (landmark #13)                 |
 snout length or preorbital depth  |  pOD           |  distance  |  length from the anterior-most (left-most) part of the eye (landmark #14) to the anterior-most (left-most)part of the head (landmark #1)       |
   
-## 3- Class description
+## 3- Trait measurement extraction
 
 We create a class to add more fexibility, which can be generalized to other projects. 
 
@@ -96,7 +96,27 @@ We create a class to add more fexibility, which can be generalized to other proj
 + Location : Trait_class.py
 + Description : This class creates an object "segmented_image" from [segmented_image.png](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png). Upon the creation of the object "segmented_image", the image.png is imported and split into channel corresponding to the traits (trunk, dorsal_fin, etc.) in the form of dictionnary with key = trait  and value a mask. Then multiple functions will extract information on individual channel.
 
-### Usage and main fucntion: 
+The output is a series of .json files with the fish number, traits, their measurements (in pixels), and the scale (in pixels/cm).
+
+We extract traits three ways:
+
+1) Using the landmarks
+2) Using the bbox
+3) Using the mask
+
+#### 1) Using the landmarks
+These trait classes have the suffix "_lm" to denote the method of extraction. 
+The lengths (in pixels) are calculated as the distance between two landmarks (described in the "Definition" column of the trait description csvs).
+
+#### 2) Using the bbox (bounding box)
+These trait classes have the suffix "_bbox" to denote the method of extraction.
+The lengths (in pixels) are calculated as the distance of a perpindicular line between the edges (either vertical or horizontal) of the bbox.
+
+#### 3) Using the mask
+These trait classes have the suffix "_m" to denote the method of extraction.
+These areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of the ![Minnow_Measurements_v1.csv](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Measurements_v1.csv).
+
+### Usage and main function: 
 
 *Quick start*
 Create a segmented image object
