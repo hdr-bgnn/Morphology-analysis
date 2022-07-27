@@ -39,7 +39,7 @@ def get_angle(metadata_file):
     f = open(metadata_file)
     data = json.load(f)
     metadata_fish = list(data.values())[0]['fish'][0]
-    
+    fish_angle = None
     major = []
     length = []
     
