@@ -47,8 +47,9 @@ def get_angle(metadata_file):
         
         major = metadata_fish['primary_axis']
         fish_angle = math.atan2(major[1], -major[0])*(180/math.pi)
-        
-    return round(fish_angle,2)
+        fish_angle = round(fish_angle,2)
+
+    return fish_angle
 
 # this class is used by json.dump to control that every value as the right format
 # particular problem encounter with np.int64 value type
