@@ -363,7 +363,7 @@ class segmented_image:
         if eye_region:
             return eye_region.area
         else:
-            return 0
+            return 'None'
     
     def measure_head_area(self):
         '''
@@ -376,7 +376,7 @@ class segmented_image:
         if head_region:
             return head_region.area
         else:
-            return 0 
+            return 'None' 
     
     def measure_eye_head_ratio(self):
         '''
@@ -493,7 +493,7 @@ class segmented_image:
         clean the mask
         get bbox and get length of bbox
         '''
-        body_length = "None"
+        body_length = 'None'
         head_trunk_caudal = self.combine_trait_mask(['head','trunk','caudal_fin'])
         if np.any(head_trunk_caudal):
             
@@ -508,14 +508,15 @@ class segmented_image:
         measure fish angle using orientation of the line define by landmark#1 and landmark #6
         '''
         landmark = self.landmark
-        fish_angle_lm = None
+        fish_angle_lm = 'None'
         if landmark['1'] and landmark['6']:
             
             # translation to origin
             trans_to_origin = list(map(sub, landmark['6'], landmark['1']))
             fish_angle_lm = math.atan2(trans_to_origin[0], trans_to_origin[1])*(180/math.pi)
+            fish_angle_lm = round(fish_angle_lm,2)
             
-        return round(fish_angle_lm,2)
+        return fish_angle_lm
     
     def all_measure_using_lm(self):        
         '''
@@ -578,7 +579,7 @@ class segmented_image:
         Measure SL (Standard Length), length of the bounding box of head + trunk
         Combine head and trunk and measure bbox length
         '''
-        standard_length = "None"
+        standard_length = 'None'
         head_trunk = self.combine_trait_mask(['head','trunk'])
         if np.any(head_trunk):
             
@@ -595,7 +596,7 @@ class segmented_image:
         mask = self.mask[trait_name]
         # remove the hole and take the biggest blob
         trait_region = self.clean_trait_region(mask)
-        trait_length_bbox = "None"
+        trait_length_bbox = 'None'
         
         if trait_region:
             minrow, mincol, maxrow, maxcol = trait_region.bbox
@@ -608,7 +609,7 @@ class segmented_image:
         '''
         Measure preorbital Depth using left boubdary of bbox of head and eye
         '''
-        pOD_bbox = "None"
+        pOD_bbox = 'None'
         mask_head = self.mask['head']
         mask_eye = self.mask['eye']
         head_region = self.clean_trait_region(mask_head)
