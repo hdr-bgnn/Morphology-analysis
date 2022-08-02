@@ -18,14 +18,13 @@ def get_scale(metadata_file):
     f = open(metadata_file)
     data = json.load(f)
     metadata_dict = list(data.values())[0]
+    scale = 'None'
+    unit = 'None'
 
     if 'scale' in metadata_dict  :
-
         scale = round(metadata_dict['scale'],3)
         unit = metadata_dict['unit']
-    else:
-        scale =[None]
-        unit =[None]
+        
     return scale , unit
 
 
@@ -39,7 +38,7 @@ def get_angle(metadata_file):
     f = open(metadata_file)
     data = json.load(f)
     metadata_fish = list(data.values())[0]['fish'][0]
-    
+    fish_angle = None
     major = []
     length = []
     
@@ -47,8 +46,9 @@ def get_angle(metadata_file):
         
         major = metadata_fish['primary_axis']
         fish_angle = math.atan2(major[1], -major[0])*(180/math.pi)
-        
-    return round(fish_angle,2)
+        fish_angle = round(fish_angle,2)
+
+    return fish_angle
 
 # this class is used by json.dump to control that every value as the right format
 # particular problem encounter with np.int64 value type
