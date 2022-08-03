@@ -67,17 +67,18 @@ def main(input_file, metadata_file, output_measure, output_landmark, output_pres
          output_lm_image=None):
     
     # Create the image segmentation object
-    img_seg = tc.segmented_image(input_file)
+    img_seg = tc.Segmented_image(input_file, align = True)
     base_name = img_seg.base_name
+    # Create object measure_morphology
+    measure_morph = tc.Measure_morphology(input_file, align = True)
     # Calcualte the mesaurements and landmarks
-    img_seg.get_all_measures_landmarks()
     
     # Assign variables
-    measurements_bbox = img_seg.measurement_with_bbox
-    measurements_lm = img_seg.measurement_with_lm
-    measurements_area = img_seg.measurement_with_area
-    landmark = img_seg.landmark
-    presence_matrix = img_seg.presence_matrix
+    measurements_bbox = measure_morph.measurement_with_bbox
+    measurements_lm = measure_morph.measurement_with_lm
+    measurements_area = measure_morph.measurement_with_area
+    landmark = measure_morph.landmark
+    presence_matrix = measure_morph.presence_matrix
     
     # Combine the 3 types of measurements (lm, bbox, area) and reorder the keys
     measurement = {'base_name': base_name, **measurements_bbox, **measurements_lm, **measurements_area }
@@ -108,7 +109,9 @@ def main(input_file, metadata_file, output_measure, output_landmark, output_pres
     
     if output_lm_image:
         
-        img_landmark = img_seg.visualize_landmark()
+
+        # create landmark visualization image and save it
+        img_landmark = measure_morph.visualize_landmark()
         img_landmark.save(output_lm_image)
     
     
