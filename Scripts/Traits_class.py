@@ -1,12 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed May 18 16:02:54 2022
+#' Adapatation for BGNN snakemake (minnows project)
+#  on Mon Aug  8 11:35:50 2022
+#' @author
+#' Yasin Bakis : Original designed idea
+#' Bahadir Altintas: first code draft https://github.com/hdr-bgnn/traits_tool 
+#' Thibault Tabarin: refactor the code, create class with additional functions for modularity.
 
-@author: thibault
-Class definition for morpholopgy analysis
-Version 1
-"""
+#' @description
+#' Meghan Balk, Bahadir Altinas, Thibault Tabarin lead by Ysain Bakis, came up with a 
+#' methodology to extract fish traits from fish segmentation. More info on trait extraction
+#' here --> https://github.com/hdr-bgnn/Morphology-analysis
+#' and here --> https://github.com/hdr-bgnn/Minnow_Traits
+#' there is 3 classes: 
+#'  + Class Segmented_image : extract the raw segmented image and split the 12 channels into dictionary
+#'    provide function to clean and play with the data
+#'  + Class Measure_morphology (parent class Segmented_image). this class provide the tools to extract
+#'    The fish landmarks, bbox of traits, fish standart measurements
+#'  + Class Visualization_morphology: tools to visualize the various trait measurement and landmarks
+#'    outputs
+#' More information on the repository https://github.com/hdr-bgnn/Morphology-analysis
+
 import os, sys, math, json
 from operator import sub
 import numpy as np
@@ -380,8 +394,8 @@ class Measure_morphology(Segmented_image):
         2- Area eye after cleaning and filing hole
         3- ratio
         '''
-        eye_area = measure_eye_area()
-        head_area = measure_head_area()
+        eye_area = self.measure_eye_area()
+        head_area = self.measure_head_area()
         
         if eye_area>0 and head_area>0:
             eye_head_ratio = eye_area/head_area
@@ -400,19 +414,7 @@ class Measure_morphology(Segmented_image):
             eq_diameter = eye_region.equivalent_diameter_area
             
         return round(eq_diameter,2)    
-     
-    def measure_head_length(self):
-        '''
-        Measure vertical length of the head passing by the center of the eye
-        '''
-        
-        landmark = self.landmark
-        p_2 = landmark['2']
-        p_15 = landmark['15']
-        # IF p_2 or p_15 get_distance will return 0
-        head_length = self.get_distance(p_2,p_15)
-        
-        return round(head_length,2)
+
     
     def calculate_triangle_area(self, point_1, point_2, point_3):
         
