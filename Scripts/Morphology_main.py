@@ -6,15 +6,28 @@ Created on Tue May 24 09:21:33 2022
 @author: thibault
 """
 import Traits_class as tc
-import json, sys, math
+import json
 import numpy as np
 import argparse
 
 def get_scale(metadata_file):
+    '''
+    Extract the scale value from metadata file    
+
+    Parameters
+    ----------
+    metadata_file : string
+        DESCRIPTION. .json file containing scale key such as{....{ruler:{scale:xxx, unit:yyy}}}
+
+    Returns
+    -------
+    scale : float
+        DESCRIPTION. scale conversion pixel/unit
+    unit : string
+        DESCRIPTION. unit value expected cm or in(inch)
 
     '''
-    extract the scale value from metadata file
-    '''
+    
     
     f = open(metadata_file)
     metadata_dict = json.load(f)
@@ -42,7 +55,7 @@ class NpEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 def argument_parser():
-    parser = argparse.ArgumentParser(description='Extract information from segmented image, presence absence\
+    parser = argparse.ArgumentParser(description='Extract information from segmented fish image such as presence absence,\
                                      landmarks, measures.')
     parser.add_argument('input_image', help='Path of segmented fish image. Format PNG image file.')
     parser.add_argument('output_presence', help='Path of output presence absence table. Format JSON file.')
@@ -58,8 +71,27 @@ def argument_parser():
     return parser
 
 def main():
+    '''
+    Use Class Segmented_image, Measure_morphology to extract information 
+    from a segmented fish image (.png image).
     
+    Input output are managed by argument_parser()
     
+    Segmented_image creates an object that isolates different traits, preprocesses them and extract genral info (such as fish angle)
+    Measure_morphology inherits from Segmented_image and uses preprocessed traits information to measure morphology
+    characteristic and landmarks.
+    There are 4 mains output defined in argument_parser()
+    args.presence : {"dorsal_fin": {"number": 1, "percentage": 1.0}, "adipos_fin": {"number": 0, "percentage": 0}....}
+    number: number of blob per trait, percentage: area % of the bigger blob.
+    args.morphology : filename to save Morphology measurement from bbox and from lankmarks.
+    args.landmark : filename to save Coordinate of the landmark extracted.
+    args.lm_image : filename to save visualization of the landmarks
+    
+    Returns
+    -------
+    None.
+
+    '''
     parser = argument_parser()
     args = parser.parse_args()
     
@@ -78,41 +110,34 @@ def main():
     measurements_lm = measure_morph.measurement_with_lm
     measurements_area = measure_morph.measurement_with_area
     landmark = measure_morph.landmark
-    
-    
-    
+        
     # Combine the 3 types of measurements (lm, bbox, area) and reorder the keys
     measurement = {'base_name': base_name, **measurements_bbox, **measurements_lm, **measurements_area }
-    list_measure= ['base_name', 'SL_bbox', 'SL_lm', 'HL_bbox', 'HL_lm', 'pOD_bbox', 'pOD_lm', 'ED_bbox', 'ED_lm', 'HH_lm', 'EA_m','HA_m','FA_pca','FA_lm']
+    list_measure = ['base_name', 'SL_bbox', 'SL_lm', 'HL_bbox', 'HL_lm', 'pOD_bbox', 'pOD_lm', 'ED_bbox', 'ED_lm', 'HH_lm', 'EA_m','HA_m','FA_pca','FA_lm']
     measurement = {k:measurement[k] for k in list_measure}
-    
-    
+    measurement.update({'scale':"None", 'unit': "None"})     
+ 
     with open(args.output_presence, 'w') as f:
         json.dump(presence_matrix, f) 
     
     # Extract the scale from metadata file
     # and add it to measurement dict
-    if args.metadata:
-        
+    if args.metadata:        
         scale , unit = get_scale(args.metadata)
         measurement['scale'] = scale
         measurement['unit'] = unit                   
-      
-        
+              
     # Save the dictionnaries in json file
     # use NpEncoder to convert the value to correct type (np.int64 -> int)
-    if args.morphology:
-        
+    if args.morphology:        
         with open(args.morphology, 'w') as f:
             json.dump(measurement, f, cls=NpEncoder)    
     
     if args.landmark:
         with open(args.landmark, 'w') as f:
             json.dump(landmark, f)
-           
-    
-    if args.lm_image:
-        
+              
+    if args.lm_image:        
         # create landmark visualization image and save it
         img_landmark = measure_morph.visualize_landmark()
         img_landmark.save(args.lm_image)
