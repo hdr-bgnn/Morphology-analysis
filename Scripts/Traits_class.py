@@ -33,12 +33,14 @@ class Segmented_image:
     
     def __init__(self, file_name, align = True, cutoff = 0.6):
         self.file = file_name
+        # expected name format "Unique_identifier_segmented.png" i.e "INHS_FISH_00072_segmented.png"
         self.image_name = os.path.split(file_name)[1]
-        self.base_name = self.image_name.rsplit('_',1)[0]
-        self.cutoff = cutoff
-        self.align = align
+        self.base_name = self.image_name.rsplit('_',1)[0] # extract unique_identifier
         
-        self.trait_color_dict={'background': [0, 0, 0],'dorsal_fin': [254, 0, 0],'adipos_fin': [0, 254, 0],
+        self.align =align
+        self.cutoff = cutoff # minimum percent in area that a blob need to be valide trait
+        
+        self.trait_color_dict = {'background': [0, 0, 0],'dorsal_fin': [254, 0, 0],'adipos_fin': [0, 254, 0],
                                'caudal_fin': [0, 0, 254],'anal_fin': [254, 254, 0],'pelvic_fin': [0, 254, 254],
                                'pectoral_fin': [254, 0, 254],'head': [254, 254, 254],'eye': [0, 254, 102],
                                'caudal_fin_ray': [254, 102, 102],'alt_fin_ray': [254, 102, 204],
@@ -46,8 +48,9 @@ class Segmented_image:
         
         self.img_arr = self.import_image(file_name)
         self.fish_angle = self.get_fish_angle_pca()
+        
         if align:
-            self.img_arr = self.align_fish()
+            self.img_arr = self.align_fish() 
             self.old_fish_angle = self.fish_angle
             self.fish_angle = self.get_fish_angle_pca()
                     
@@ -138,6 +141,9 @@ class Segmented_image:
         Find the biggest region
         return region_trait
         '''
+        # percent area of the biggest blob below which the trait is excluded
+        # in other word if a trait is composed of lot of small blobs with none having more than 
+        # 60% of the total trait area, we reject
         percent_cutoff = self.cutoff
         # remove hole/fill empty area
         trait_filled = self.remove_holes(trait_mask)
