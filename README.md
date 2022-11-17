@@ -98,7 +98,7 @@ We created classes to add more fexibility, which can be helpfull to generalize t
 + Classes Name : Segmented_image, Measure_morphology, Visualization_morphology
 + Location : Trait_class.py
 + Description : 
-  - Segmented_image class : This class creates an object "segmented_image" from [segmented_image.png](Scripts/test_images/INHS_FISH_000742_segmented.png). The object "segmented_image" importd the image.png and split into channels corresponding to the traits (trunk, dorsal_fin, etc.) in the form of dictionnary with key = trait  and value a mask. Then multiple functions will be applied to extract basic information on individual channel and on the whole fish.
+  - Segmented_image class : This class creates an object "segmented_image" from [segmented_image.png](Scripts/test_images/INHS_FISH_000742_segmented.png). The object "segmented_image" imported the image.png and split into channels corresponding to the traits (trunk, dorsal_fin, etc.) in the form of a dictionary with key = trait  and value a mask. Then multiple functions will be applied to extract basic information on individual channel and on the whole fish.
     - Two functions of interest:
       + function get_fish_angle_pca : angle of the fish from principal component
       + function get_presence_matrix : precense and absence matrix with number of blob and percentage (by area) of the major blob per traits
