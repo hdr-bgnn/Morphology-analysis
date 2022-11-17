@@ -28,9 +28,9 @@ def get_scale(metadata_file):
 
     '''
     
-    
-    f = open(metadata_file)
-    metadata_dict = json.load(f)
+    with open(metadata_file, 'r') as f:
+        metadata_dict = json.load(f)
+        
     scale = "None"
     unit = "None"
 
