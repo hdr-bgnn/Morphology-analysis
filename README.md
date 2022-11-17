@@ -92,7 +92,7 @@ We use the following descriptions and labels for landmarks and measurements. If 
   
 ## 3- Extract trait information : Classes
 
-We created classes to add more fexibility, which can be helpfull to generalize to other projects. [Trait_class](Scripts/Traits_class.py)
+We created classes to add more flexibility, which can be helpful to generalize to other projects. [Trait_class](Scripts/Traits_class.py)
 
 *Classes Overview*
 + Classes Name : Segmented_image, Measure_morphology, Visualization_morphology
