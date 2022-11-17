@@ -2,19 +2,19 @@
 Extract morphological characteristics from image of fish trait segmentation.
 
 
-The goals of the tool is to extract measurments and landmarks of fish from the segmented fish iamge porduced by M. Maruf.
-It provides a framework for creating modularized tools by using classes and providing a way to visualize and test functionality using jupyter notebook. 
-We will release and containerize a working version for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
-This tool can me made more generalizable but is a part of a bigger project, find the overview [Minnows Project](https://github.com/hdr-bgnn/minnowTraits).
+The goals of the tool is to extract presence-absence table, measurments and landmarks of fish from the segmented fish image porduced by M. Maruf.
+It provides a framework for creating modularized tools by using classes and jupyter notebook to visualize and test functionalities. 
+The tool is automatically containerized when a new release is published. It provide a validated version for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
+This tool can me made more generalizable but it has been developped for the [Minnows Project](https://github.com/hdr-bgnn/minnowTraits).
 
 
 ## 1- Segmented image .png description
 
-The segmented image input looks like image below, with traits color coded and identified by "blobs". The segmentation model uses [M. Maruf's segmentation code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py), and is based on a Convolutional Nerual Net (CNN; unet) deep learning algorithm. You can find more information on the [BGNN-trait-segementation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation).  The output is 11 classes (traits) that are color coded. We are only using 9 of them, and are excluding alt_fin_ray and caudal_fin_ray.
+The segmented image input looks like image below, with traits color coded and identified by "blobs". The segmentation model uses [M. Maruf's segmentation code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py), and is based on a Convolutional Neural Network (CNN; more specifically unet). You can find more information on the [BGNN-trait-segementation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation).  The output is 11 classes (traits) that are color coded. We are only using 9 of them, and are excluding alt_fin_ray and caudal_fin_ray.
 
 
-![segmented fish image](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Test_Data/INHS_FISH_000742_segmented.png)
-![Color legend](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/trait_legend.png)
+![segmented fish image](Test_Data/INHS_FISH_000742_segmented.png)
+![Color legend](Traits_description/trait_legend.png)
 
 When you export this image in python using pillow library (PIL.Image.open(file_name)), the corresponding color coding in RGB is:
 * 'background': [0, 0, 0],
@@ -45,12 +45,11 @@ The approach that we use for extracting traits is the following:
 We use the following descriptions and labels for landmarks and measurements. If you had more features in the class and codes to extract landmarks or measurement, please create an issue or make a pull request to update the image description and corresponding table.
 
 
-![Fish landmarks](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Landmarks_v1.png)
+![Fish landmarks](Traits_description/Minnow_Landmarks_v1.png)
 
-![Fish measurment](https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.png)
+![Fish measurment](Traits_description/Minnow_Measurements_v1.png)
 
-
-**<a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Landmarks_v1.csv">Landmarks Table</a>**
+**[Landmarks Table](Traits_description/Minnow_Landmarks_v1.csv)**
 
   Landmark_Number  |  Definition  |  codeDefinition  
 ----------|------------------|----------------------------------------------
@@ -73,7 +72,7 @@ We use the following descriptions and labels for landmarks and measurements. If 
   17 |  Ventral-most (lower) part of eye  |  Furthest bottom point of the eye mask defined by bottom boundary of the bbox  
   18 |  Center (centroid) of eye  |  Center of the eye mask  
   
-**<a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/issue-18/Traits_description/Minnow_Measurements_v1.csv">Measurement Table</a>**  
+**[Measurement Table](Traits_description/Minnow_Measurements_v1.csv)**  
 
   Type  |  Measurement  |  Abbreviation  |  Definition  
 --------------------|----------------|------------|-----------------------------------------------
@@ -91,30 +90,40 @@ We use the following descriptions and labels for landmarks and measurements. If 
   angle  |  fish angle using landmarks  |  Fa_lm  |  angle of the tilt of the fish from horizontal (angle between the SL_lm and and the horizontal line of the image)  
   angle  |  fish angle using PCA  |  Fa_pca  |  angle of the tilt of the fish from horizontal (angle between the pca through the midline of the fish mask and the horizontal line of the image)  
   
-## 3- Trait measurement extraction
+## 3- Extract trait information : Classes
 
-We create a class to add more fexibility, which can be generalized to other projects. 
+We created classes to add more fexibility, which can be helpfull to generalize to other projects. [Trait_class](Scripts/Traits_class.py)
 
-*Class Overview*
-+ Class Name : Trait_class
+*Classes Overview*
++ Classes Name : Segmented_image, Measure_morphology, Visualization_morphology
 + Location : Trait_class.py
-+ Description : This class creates an object "segmented_image" from [segmented_image.png](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/test_images/INHS_FISH_000742_segmented.png). Upon the creation of the object "segmented_image", the image.png is imported and split into channel corresponding to the traits (trunk, dorsal_fin, etc.) in the form of dictionnary with key = trait  and value a mask. Then multiple functions will extract information on individual channel.
++ Description : 
+  - Segmented_image class : This class creates an object "segmented_image" from [segmented_image.png](Scripts/test_images/INHS_FISH_000742_segmented.png). The object "segmented_image" importd the image.png and split into channels corresponding to the traits (trunk, dorsal_fin, etc.) in the form of dictionnary with key = trait  and value a mask. Then multiple functions will be applied to extract basic information on individual channel and on the whole fish.
+    - Two functions of interest:
+      + function get_fish_angle_pca : angle of the fish from principal component
+      + function get_presence_matrix : precense and absence matrix with number of blob and percentage (by area) of the major blob per traits
+  - Measure_morphology class : This class inherit from Segmented_image class. It will use individual trait information to measure dimension of interest on the fish [see Table](Traits_description/Minnow_Measurements_v1.csv) and position landmark. There are 3 main sections, (1) find landmarks, (2) measure using landmark, (3) measure using bbox (bounding box). 
+    - Few functions of interest:
+      + function all_landmark : find the landmarks defined in landmarks table
+      + function all_measure_using_lm : measure dimension of interest using landmarks
+      + fucntion all_measure_using_bbox : measure dimension of interest using bounding box
 
-The output is a series of .json files with the fish number, traits, their measurements (in pixels), and the scale (in pixels/cm).
+## 4- the Main function
 
-We extract traits three ways:
-
-1) Using the landmarks
-2) Using the bbox
-3) Using the mask
+The main function uses classes functionalities to collect information and wraps everything in final main .
+The outputs are a series of .json files and .png file.
+    + presence_matrix.json
+    + measurements.json
+    + landmark.json
+    + landmark_image.png
 
 #### 1) Using the landmarks
-These trait classes have the suffix "_lm" to denote the method of extraction. 
+These trait classes functions have the suffix "_lm" to denote the method of extraction. 
 
 The lengths (in pixels) are calculated as the distance between two landmarks (described in the "Definition" column of the trait description csvs).
 
 #### 2) Using the bbox (bounding box)
-These trait classes have the suffix "_bbox" to denote the method of extraction.
+These trait classes fucntiosn have the suffix "_bbox" to denote the method of extraction.
 
 The lengths (in pixels) are calculated as the distance of a perpindicular line between the edges (either vertical or horizontal) of the bbox.
 
