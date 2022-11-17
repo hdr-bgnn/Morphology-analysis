@@ -5,7 +5,7 @@ Extract morphological characteristics from image of fish trait segmentation.
 The goals of the tool is to extract presence-absence table, measurements and landmarks of fish from the segmented fish image produced by M. Maruf.
 It provides a framework for creating modularized tools by using classes and jupyter notebook to visualize and test functionalities. 
 The tool is automatically containerized when a new release is published. It provides a validated version for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
-This tool can me made more generalizable but it has been developped for the [Minnows Project](https://github.com/hdr-bgnn/minnowTraits).
+This tool can me made more generalizable but it has been developed for the [Minnows Project](https://github.com/hdr-bgnn/minnowTraits).
 
 
 ## 1- Segmented image .png description
