@@ -123,7 +123,7 @@ These trait classes functions have the suffix "_lm" to denote the method of extr
 The lengths (in pixels) are calculated as the distance between two landmarks (described in the "Definition" column of the trait description csvs).
 
 #### 2) Using the bbox (bounding box)
-These trait classes fucntiosn have the suffix "_bbox" to denote the method of extraction.
+These trait classes functions have the suffix "_bbox" to denote the method of extraction.
 
 The lengths (in pixels) are calculated as the distance of a perpindicular line between the edges (either vertical or horizontal) of the bbox.
 
