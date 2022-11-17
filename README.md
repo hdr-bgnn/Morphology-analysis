@@ -10,7 +10,7 @@ This tool can me made more generalizable but it has been developped for the [Min
 
 ## 1- Segmented image .png description
 
-The segmented image input looks like image below, with traits color coded and identified by "blobs". The segmentation model uses [M. Maruf's segmentation code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py), and is based on a Convolutional Neural Network (CNN; more specifically unet). You can find more information on the [BGNN-trait-segementation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation).  The output is 11 classes (traits) that are color coded. We are only using 9 of them, and are excluding alt_fin_ray and caudal_fin_ray.
+The segmented image input looks like image below, with traits color coded and identified by "blobs". The segmentation model uses [M. Maruf's segmentation code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py), and is based on a Convolutional Neural Network (CNN; more specifically unet). You can find more information on the [BGNN-trait-segmentation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation).  The output is 11 classes (traits) that are color coded. We are only using 9 of them, and are excluding alt_fin_ray and caudal_fin_ray.
 
 
 ![segmented fish image](Test_Data/INHS_FISH_000742_segmented.png)
