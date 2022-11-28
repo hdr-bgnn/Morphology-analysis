@@ -82,7 +82,7 @@ def main():
     Measure_morphology inherits from Segmented_image and uses preprocessed traits information to measure morphology
     characteristic and landmarks.
     There are 4 mains output defined in argument_parser()
-    args.presence : {"dorsal_fin": {"number": 1, "percentage": 1.0}, "adipos_fin": {"number": 0, "percentage": 0}....}
+    args.output_presence : {"dorsal_fin": {"number": 1, "percentage": 1.0}, "adipos_fin": {"number": 0, "percentage": 0}....}
     number: number of blob per trait, percentage: area % of the bigger blob.
     args.metadata : filename to import for metadata info (scale information) -  structured as output by drexel_metadata_formatter.
     args.morphology : filename to save Morphology measurement from bbox and from lankmarks.
