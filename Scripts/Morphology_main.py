@@ -61,7 +61,8 @@ def argument_parser():
     parser.add_argument('output_presence', help='Path of output presence absence table. Format JSON file.')
     
     
-    parser.add_argument('--metadata', help='Path of input drexel_metadata_formatter. Format JSON metadata file.')
+    parser.add_argument('--metadata', 
+                        help=' Path to the metadata, structured as output by drexel_metadata_formatter. Format JSON file.')
     parser.add_argument('--morphology', 
                         help='Save the dictionnary of morphology measurements with the provided filename.')
     parser.add_argument('--landmark', 
