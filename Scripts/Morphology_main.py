@@ -106,7 +106,8 @@ def main():
     # Calcualte the mesaurements and landmarks
     
     # Assign variables from img_seg
-    presence_matrix = {'base_name' : base_name, **img_seg.presence_matrix}
+    presence_matrix = {'base_name' : base_name, **img_seg.presence_matrix,
+                       'ruler':{'presence' : 'no', 'scale' : 'None', 'unit' : 'None'}}
     # Assign variable from measure_morph
     measurements_bbox = measure_morph.measurement_with_bbox
     measurements_lm = measure_morph.measurement_with_lm
@@ -118,17 +119,19 @@ def main():
     list_measure = ['base_name', 'SL_bbox', 'SL_lm', 'HL_bbox', 'HL_lm', 'pOD_bbox', 'pOD_lm', 'ED_bbox', 'ED_lm', 'HH_lm', 'EA_m','HA_m','FA_pca','FA_lm']
     measurement = {k:measurement[k] for k in list_measure}
     measurement.update({'scale':"None", 'unit': "None"})     
- 
-    with open(args.output_presence, 'w') as f:
-        json.dump(presence_matrix, f) 
     
     # Extract the scale from metadata file
     # and add it to measurement dict
     if args.metadata:        
         scale , unit = get_scale(args.metadata)
         measurement['scale'] = scale
-        measurement['unit'] = unit                   
-              
+        measurement['unit'] = unit 
+        
+        presence_matrix['ruler'] = {'presence' : 'yes', 'scale' : scale, 'unit' : unit}                
+    
+    with open(args.output_presence, 'w') as f:
+        json.dump(presence_matrix, f) 
+          
     # Save the dictionnaries in json file
     # use NpEncoder to convert the value to correct type (np.int64 -> int)
     if args.morphology:        
