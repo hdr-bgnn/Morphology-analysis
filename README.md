@@ -1,7 +1,6 @@
 # Morphology-analysis
 Extract morphological characteristics from image of fish trait segmentation.
 
-
 The goals of the tool is to extract presence-absence table, measurements and landmarks of fish from the segmented fish image produced by M. Maruf.
 It provides a framework for creating modularized tools by using classes and jupyter notebook to visualize and test functionalities. 
 The tool is automatically containerized when a new release is published. It provides a validated version for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
@@ -30,24 +29,31 @@ When you export this image in python using pillow library (PIL.Image.open(file_n
 * 'alt_fin_ray': [254, 102, 204],
 * 'trunk': [0, 124, 124]
 
-The approach that we use for extracting traits is the following:
 
+## 2- Presence Absence of Traits
+
+The approach that we use for checking presence and absence of traits is the following:
 
   1. Isolate indivual traits (e.g., isolate the dorsal_fin)
-  2. Remove small blobs and fill in gaps within each trait
-  3. Identify landmarks (defined in section 2)
-  4. Use landmarks and morphological tools (centroid, area, etc.) to extract the measurements (**external characters**)
+  2. Count number of blobs
+  3. Calculate percentage of large blob
 
 
+## 3- Other Functions
 
-## 2- Landmarks and measurements
+The approach that we use for creating landmarks and extracting measurements is the following: 
 
-We use the following descriptions and labels for landmarks and measurements. If you had more features in the class and codes to extract landmarks or measurement, please create an issue or make a pull request to update the image description and corresponding table.
+  1. Remove small blobs and fill in gaps within each trait
+  2. Identify landmarks
+  3. Use landmarks, bounding box, and morphological tools (centroid, area, etc.) to extract the measurements
+
+If you had more features in the class and codes to extract landmarks or measurement, please create an issue or make a pull request to update the image description and corresponding table.
+ 
+### Landmarks
 
 
 ![Fish landmarks](Traits_description/Minnow_Landmarks_v1.png)
 
-![Fish measurment](Traits_description/Minnow_Measurements_v1.png)
 
 **[Landmarks Table](Traits_description/Minnow_Landmarks_v1.csv)**
 
@@ -72,6 +78,12 @@ We use the following descriptions and labels for landmarks and measurements. If 
   17 |  Ventral-most (lower) part of eye  |  Furthest bottom point of the eye mask defined by bottom boundary of the bbox  
   18 |  Center (centroid) of eye  |  Center of the eye mask  
   
+#### Measurements
+
+
+![Fish measurment](Traits_description/Minnow_Measurements_v1.png)
+
+
 **[Measurement Table](Traits_description/Minnow_Measurements_v1.csv)**  
 
   Type  |  Measurement  |  Abbreviation  |  Definition  
@@ -90,53 +102,38 @@ We use the following descriptions and labels for landmarks and measurements. If 
   angle  |  fish angle using landmarks  |  Fa_lm  |  angle of the tilt of the fish from horizontal (angle between the SL_lm and and the horizontal line of the image)  
   angle  |  fish angle using PCA  |  Fa_pca  |  angle of the tilt of the fish from horizontal (angle between the pca through the midline of the fish mask and the horizontal line of the image)  
   
-## 3- Extract trait information : Classes
+#### method of measurement extraction
 
 We created classes to add more flexibility, which can be helpful to generalize to other projects. [Trait_class](Scripts/Traits_class.py)
 
-*Classes Overview*
-+ Classes Name : Segmented_image, Measure_morphology, Visualization_morphology
-+ Location : Trait_class.py
-+ Description : 
-  - Segmented_image class : This class creates an object "segmented_image" from [segmented_image.png](Scripts/test_images/INHS_FISH_000742_segmented.png). The object "segmented_image" imported the image.png and split into channels corresponding to the traits (trunk, dorsal_fin, etc.) in the form of a dictionary with key = trait  and value a mask. Then multiple functions will be applied to extract basic information on individual channel and on the whole fish.
-    - Two functions of interest:
-      + function get_fish_angle_pca : angle of the fish from principal component
-      + function get_presence_matrix : precense and absence matrix with number of blob and percentage (by area) of the major blob per traits
-  - Measure_morphology class : This class inherit from Segmented_image class. It will use individual trait information to measure dimension of interest on the fish [see Table](Traits_description/Minnow_Measurements_v1.csv) and position landmark. There are 3 main sections, (1) find landmarks, (2) measure using landmark, (3) measure using bbox (bounding box). 
-    - Few functions of interest:
-      + function all_landmark : find the landmarks defined in landmarks table
-      + function all_measure_using_lm : measure dimension of interest using landmarks
-      + fucntion all_measure_using_bbox : measure dimension of interest using bounding box
+Since the functions are modular, we can specify different methods for extracting measurements.
 
-## 4- the Main function
+_landmarks_
 
-The main function uses classes functionalities to collect information and wraps everything in final main .
-The outputs are a series of .json files and .png file.
-    + presence_matrix.json
-    + measurements.json
-    + landmark.json
-    + landmark_image.png
-
-#### 1) Using the landmarks
-These trait classes functions have the suffix "_lm" to denote the method of extraction. 
-
+These measurement trait classes functions have the suffix "_lm"_ to denote the method of extraction. 
 The lengths (in pixels) are calculated as the distance between two landmarks (described in the "Definition" column of the trait description csvs).
 
-#### 2) Using the bbox (bounding box)
-These trait classes functions have the suffix "_bbox" to denote the method of extraction.
-
+_bbox (bounding box)_
+These trait classes functions have the suffix "_bbox"_ to denote the method of extraction.
 The lengths (in pixels) are calculated as the distance of a perpindicular line between the edges (either vertical or horizontal) of the bbox.
 
-#### 3) Using the mask
-These trait classes have the suffix "_m" to denote the method of extraction.
+_mask_
+These trait classes have the suffix "_m"_ to denote the method of extraction.
 
-These areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of the <a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Measurements_v1.csv">Minnow_Measurements_v1.csv</a>.
+#### Areas
 
-### For a quick start look at the Notebook section (in development)
+Areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of the <a href="https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Measurements_v1.csv">Minnow_Measurements_v1.csv</a>.
+
 
 ## 4- Usage, input and output
 
 By default, without option, Morphology_main.py will output the presence and absence table. Morphology, landmarks tables and landmark image are optional output. 
+
+The outputs for the functions are a series of .json files and .png file.
+    + presence_matrix.json
+    + measurements.json
+    + landmark.json
+    + landmark_image.png
 
 Usage:
 
@@ -157,7 +154,7 @@ cd Morphology-analysis/
   + input_file.png : **Positional require**. Segmented fish image generated by [Maruf code](https://github.com/hdr-bgnn/BGNN-trait-segmentation/tree/main/Segment_mini), [example](Test_Data/INHS_FISH_000742_segmented.png)
  + ouput_presence.json : **Positional require**. Save the presence-absence dictionnary with the filename provided [example](Test_Data/INHS_FISH_000742_presence.json)
 
-## 5-Container, usage and release
+## 5- Container, usage and release
 
 We use github action to create a container what run the main script [Morphology_main.py](Scripts/Morphology_main.py). 
   1. The workflow to build the container is defined [here](.github/workflows/Deploy_Morpholgy.yml).   
@@ -233,8 +230,6 @@ Once you set up the kernel for jupyter notebook, you do not need to do it again.
   + Launch
   + Navigate to ~/Morphology-analysis/Scripts/Morphology_dev.ipynb
   + Change kernel to Morphology_jupyter
-
-
 
 ## 7- Development tricks
 
