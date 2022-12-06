@@ -178,14 +178,15 @@ By default Morphology_main.py outputs a presence table. Creating landmarks, visu
 
 The inputs for the tools are:
 
-    * segmented image: filename_segmented.png (required)
-    * Metadata: basename_metadata.json (optional)
+* segmented image: filename_segmented.png (**required**)
+* Metadata: basename_metadata.json (*optional*)
 
 The outputs for the tools are:
-    + Presence: basename_presence.json (required)
-    + Landmark: basename_landmark.json (optional)
-    + Visualize: basename_lm_image.png (optional)
-    + Measure: basename_morphology.json (optional)
+
+* Presence: basename_presence.json (**required**)
+* Landmark: basename_landmark.json (*optional*)
+* Visualize: basename_lm_image.png (*optional*)
+* Measure: basename_morphology.json (*optional*)
 
 
 The main arguments to run this repository are:
@@ -211,7 +212,7 @@ To add optional tools, simply add one or all of the following, where "--" denote
 ```
 
 
-Here is an example with [Test_Data](https://github.com/hdr-bgnn/Morphology-analysis/Test_Data): 
+Here is an example using [Test_Data](https://github.com/hdr-bgnn/Morphology-analysis/Test_Data): 
 ```
 cd Morphology-analysis/
 ./Script/Morphology_main.py --metadata Test_Data/INHS_FISH_000742.json --morphology Test_Data/INHS_FISH_000742_measure.json --landmark Test_Data/INHS_FISH_000742_landmark.json --lm_image Test_Data/INHS_FISH_000742_image_lm.png Test_Data/INHS_FISH_000742_segmented.png Test_Data/INHS_FISH_000742_presence.json
@@ -227,7 +228,7 @@ The repository is containerized each release and is stored on the GitHub registr
 
 The workflow to build the container is defined [here](.github/workflows/Deploy_Morpholgy.yml).   
 
-The Dockerfile definition is [here](Dockerfile)
+The Dockerfile definition is [here](Dockerfile).
 
 Pull the latest image: 
 ```
@@ -239,7 +240,7 @@ Run the container:
 ```
 singularity exec morphology_latest.sif Morphology_main.py  <input_file> <presence.json> --metadata <metadata.json> --morphology <Morphology.json> --landmark <landmark.json> --lm_image <image_lm.png>
 
-# test Example
+# Example
 singularity exec morphology_latest.sif Morphology_main.py --metadata Test_Data/INHS_FISH_000742.json --morphology Test_Data/INHS_FISH_000742_measure.json --landmark Test_Data/INHS_FISH_000742_landmark.json --lm_image Test_Data/INHS_FISH_000742_image_lm.png Test_Data/INHS_FISH_000742_segmented.png Test_Data/INHS_FISH_000742_presence.json
 ```
   
@@ -251,42 +252,68 @@ In development, you can check [this notebook](https://github.com/hdr-bgnn/Morpho
 You will need to use [Morphology_env.yml](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/morphology_env.yml) to set up your environment before working (required dependencies). I recommend conda, miniconda as environment manager.
 
 To set up your virtual environment in the OSC:
-  1. Create an account on the OSC
-  2. Go to OSC home directory
-  3. Open a cluster
-  4. Clone the repository onto your home directory
-    ```git clone <SSH link>```
 
-  5. Navigate to scripts
-    ```cd Morphology-analysis/Scripts```
-  6. Run conda & create an environment
-    ```
-    module load miniconda3
-    conda info -e #see what environments you have; you should be on "base"
-    conda env create -f morphology_env.yml -n morphology_env
-    ```
-    -f means files to select (which is morphology_env.yml)
-    -n means to name the virtual environment, which here is "morphology_env"
+1. Create an account on the OSC
+2. Go to OSC home directory
+3. Open a cluster
+4. Clone the repository onto your home directory
 
-    Check that the environment was made
-    ```conda info -e```
-    Activate the environment 
-    ```
-    source acitvate morphology_env
-    ```
-    Check that you're on the virtual environment
-    ```conda info -e #you should be on "morphology_env"```
-    Once the environment is set up, you do not need to recreate it.
-  7. Launch the jupyter notebook app and set your kernel to "Python Morphology_jupyter".
-    Activate the virtual environment kernel for jupyter notebook
-    ```
-    pip install ipykernel
-    python -m ipykernel install --user --name morphlogy_env --display-name "Python (Morphology_jupyter)"
-    ```
-    Once you set up the kernel for jupyter notebook, you do not need to do it again.
+  ```
+  git clone <SSH link>
+  ```
+
+5. Navigate to scripts
+
+  ```
+  cd Morphology-analysis/Scripts
+  ```
+  
+6. Run conda & create an environment
+
+  ```
+  module load miniconda3
+  conda info -e #should be on "base"
+  conda env create -f morphology_env.yml -n morphology_env
+  ```
+  
+  -f means files to select (which is morphology_env.yml)
+  
+  -n means to name the virtual environment, which here is "morphology_env"
+
+  Check that the environment was made
+
+  ```
+  conda info -e
+  ```
+  
+  Activate the environment 
+
+  ```
+  source acitvate morphology_env
+  ```
+  
+  Check that you're on the virtual environment
+
+  ```
+  conda info -e #you should be on "morphology_env"
+  ```
+  
+  Once the environment is set up, you do not need to recreate it.
+  
+7. Launch the jupyter notebook app and set your kernel to "Python Morphology_jupyter".
+
+  Activate the virtual environment kernel for jupyter notebook
+
+  ```
+  pip install ipykernel
+  python -m ipykernel install --user --name morphlogy_env --display-name "Python (Morphology_jupyter)"
+  ```
+
+  Once you set up the kernel for jupyter notebook, you do not need to do it again.
+
 
 **Launch Jupyter notebook Morphology_dev.ipynb**
-  + Use OSC dashboard [onthedemand](https://ondemand.osc.edu/pun/sys/dashboard)
+  + Use OSC dashboard [On Demand](https://ondemand.osc.edu/pun/sys/dashboard)
   + Tab Interactive Apps
   + Select Jupyter notebook
   + Choose the configuration you want (start with cores:1 Number_hours:1, Node_type:any)
