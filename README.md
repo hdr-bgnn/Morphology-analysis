@@ -190,7 +190,7 @@ The outputs for the tools are:
 * Measure: basename_morphology.json (*optional*)
 
 
-The main arguments to run this repository are:
+The main arguments for running `Morphology_main.py` are:
 ```
 Morphology_main.py input_image output_presence 
 ```
