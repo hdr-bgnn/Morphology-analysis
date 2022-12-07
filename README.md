@@ -8,7 +8,7 @@ Finally, this repository also provides a way to visualize outputs of the tools a
 
 This repository is automatically containerized when a new release is published. This allows for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
 
-This tool can me made more generalizable, but was originally developed for the [Minnows Project](https://github.com/hdr-bgnn/Minnow_Segmented_Traits).
+This tool was originally developed for the [Minnows Project](https://github.com/hdr-bgnn/Minnow_Segmented_Traits).
 
 ## 1- Input: Segmented Image
 
