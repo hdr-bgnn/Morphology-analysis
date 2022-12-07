@@ -14,7 +14,7 @@ This tool was originally developed for the [Minnows Project](https://github.com/
 
 The input is the output of the segmentation model, which is a file named basename_segmented.png, where "basename" is the file name for the original image. The segmentation model is based on a Convolutional Neural Network (CNN; more specifically unet). More information can be found In the [BGNN-trait-segmentation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation), in particular see the [segmentation code there](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py).
 
-A segmented image looks like the image below, with traits color-coded and visualized by "blobs".  There are 11 trait classes corresponding to the annotated traits. Here, only 9 are used (alt_fin_ray and caudal_fin_ray are excluded).
+A segmented image looks like the image below, with traits color-coded and visualized by "blobs", which are detatched entities that denote the same trait.  There are 11 trait classes corresponding to the annotated traits. Here, only 9 are used (alt_fin_ray and caudal_fin_ray are excluded).
 
 
 ![segmented fish image](Test_Data/INHS_FISH_000742_segmented.png)
@@ -56,7 +56,7 @@ The input for the measure tool is a metadata file named "basename_metadata.json"
 To create landmarks, visualizations, and extract measurements, the tool:
 
   1. Isolates an individual trait (e.g., isolates the dorsal_fin)
-  2. Removes any small blobs of a trait and fills in gaps between blobs of a trait
+  2. Removes any small blobs of a trait and fills in holes within blobs of a trait
   3. Identify and place landmarks
   4. Extract measurements of traits using landmarks (_lm), masks (_m), or a bounding box (_bbox)
 
