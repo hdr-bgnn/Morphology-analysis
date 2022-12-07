@@ -251,19 +251,33 @@ singularity exec morphology_latest.sif Morphology_main.py --metadata Test_Data/I
 ```
   
 ## 6- Visualize Morphological Traits 
-A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow generation and visualization of morphological traits for some sample data.
+A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow generation and visualization of morphological traits for some sample data. 
 
-### Setup
+### Requirements
+To run this notebook requires installing [Jupyter](https://jupyter.org/install) and the requirements defined in [Scripts/morphology_env.yml](Scripts/morphology_env.yml). One method to install the requirments is using the [conda](https://docs.conda.io/en/latest/) command line tool. If the conda command line tool is not already installed one popular python distribution that provides conda is [miniconda](https://docs.conda.io/en/latest/miniconda.html).
+
 Ensure this repository has been cloned and you are in the base directory.
 
-Before running this notebook a software environment must be created containing the requirements specified in [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and [Jupyter's requirements](https://jupyter.org/install). Additionally a [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels) will need to be setup to to utilize this environment.
-
-If conda is available (for example through [miniconda](https://docs.conda.io/en/latest/miniconda.html)) an environment named "morphology" can be created like so:
+### Local Usage
+When running locally both jupyter and the [Scripts/morphology_env.yml] requirements can be installed into a single environment for simplicity.
+To create an environment named `morphology` with these requirements run the following commands: 
 ```
 conda env create -f Scripts/morphology_env.yml
+conda activate morphology
+pip install jupyter-lab
 ```
-If running on a cluster you will need to consult the cluster specific documentation for instructions to install the appropriate jupyter dependencies and setup the kernel.
+Then to start jupyter run the following command: 
+```
+jupyter-lab
+```
+*If you see a jupyter-lab command not found error you may need to first run `conda activate morphology`.*
 
+Then within jupyter-lab navigate to Scripts directory and doubleclick Morphology_dev.ipynb. If prompted select the default python environment.
+
+### Cluster Usage
+To run this notebook on a cluster requires creating a conda environment from [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and setting up a  the [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels). Clusters typically provide their own version of jupyter so that software will not need to be installed, but a kernel must be setup so the cluster provided jupyter software can location your conda environment.
+
+You will likely need to consult the cluster specific documentation for instructions setup the kernel. For more about setting up kernels see [ipython documentation](https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments).
 
 ### Running
 Launch jupyter, open [Scripts/Morphology_dev.ipynb](Scripts/Morphology_dev.ipynb), choose your newly installed kernel when prompted.
