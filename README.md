@@ -222,7 +222,7 @@ cd Morphology-analysis/
 If no arguments are given, an error message will say "missing two positional arguments", which are the input file and the output file. Use "-h" to pull up the help file with the full list of arguments. 
 
 
-## 5- Version control
+## 5- Automatic Docker container build and version tags
 
 The repository is containerized each release and is stored on the GitHub registry. The containerized version is called to run the main script, [Morphology_main.py](Scripts/Morphology_main.py). 
 
