@@ -158,7 +158,7 @@ The lengths (in pixels) are calculated as the distance between two landmarks (de
 _bounding box (bbox)_
 
 
-These trait classes functions have the suffix *"_bbox"* to denote the method of extraction.
+These trait class functions have the suffix *"_bbox"* to denote the method of extraction.
 The lengths (in pixels) are calculated as the distance of a perpendicular line between the edges (either vertical or horizontal) of the bounding box (bbox).
 
 
