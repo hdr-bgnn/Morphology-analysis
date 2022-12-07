@@ -14,7 +14,7 @@ This tool was originally developed for the [Minnows Project](https://github.com/
 
 The input is the output of the segmentation model, which is a file named basename_segmented.png, where "basename" is the file name for the original image. The segmentation model is based on a Convolutional Neural Network (CNN; more specifically unet). More information can be found In the [BGNN-trait-segmentation repository](https://github.com/hdr-bgnn/BGNN-trait-segmentation), in particular see the [segmentation code there](https://github.com/hdr-bgnn/BGNN-trait-segmentation/blob/main/Segment_mini/scripts/segmentation_main.py).
 
-The segmented image looks like image below, with traits color-coded and visualized by "blobs".  There are 11 trait classes corresponding to the annotated traits. Here, only 9 are used (alt_fin_ray and caudal_fin_ray are excluded).
+A segmented image looks like the image below, with traits color-coded and visualized by "blobs".  There are 11 trait classes corresponding to the annotated traits. Here, only 9 are used (alt_fin_ray and caudal_fin_ray are excluded).
 
 
 ![segmented fish image](Test_Data/INHS_FISH_000742_segmented.png)
