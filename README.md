@@ -224,7 +224,7 @@ If no arguments are given, an error message will say "missing two positional arg
 
 ## 5- Automatic Docker container build and version tags
 
-The repository is containerized each release and is stored on the GitHub registry. The containerized version is called to run the main script, [Morphology_main.py](Scripts/Morphology_main.py). 
+Upon publishing a new release, a Docker container image is automatically built from the release and published on the GitHub container and package registry. The published image is tagged with major, major.minor, and major.minor.patch versions corresponding to the release.
 
 The workflow to build the container is defined [here](.github/workflows/Deploy_Morpholgy.yml).   
 
