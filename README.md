@@ -250,7 +250,7 @@ singularity exec morphology_latest.sif Morphology_main.py  <input_file> <presenc
 singularity exec morphology_latest.sif Morphology_main.py --metadata Test_Data/INHS_FISH_000742.json --morphology Test_Data/INHS_FISH_000742_measure.json --landmark Test_Data/INHS_FISH_000742_landmark.json --lm_image Test_Data/INHS_FISH_000742_image_lm.png Test_Data/INHS_FISH_000742_segmented.png Test_Data/INHS_FISH_000742_presence.json
 ```
   
-## 6- Visualize Extracted Morphological Traits 
+## 6- Extracted/Visualize Morphological Traits 
 A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow generation/visualization morphological traits for some sample data.
 
 ### Setup
