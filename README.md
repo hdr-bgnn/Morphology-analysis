@@ -230,7 +230,7 @@ The workflow  to build the container is defined as a GitHub action [here](.githu
 
 The Dockerfile definition is [here](Dockerfile).
 
-Pull the latest image: 
+Pull the latest image (in an HPC environment, docker is typically not supported but singularity is): 
 ```
 docker pull ghcr.io/hdr-bgnn/morphology-analysis/morphology:latest 
 #singularity pull docker://ghcr.io/hdr-bgnn/morphology-analysis/morphology:latest
