@@ -196,6 +196,12 @@ Morphology_main.py input_image output_presence
 
 To add optional tools, simply add one or all of the following, where "--" denotes the tool and the second term is the output file:
 
+```
+Morphology_main.py [-h] [--metadata METADATA] [--morphology MORPHOLOGY] [--landmark LANDMARK] [--lm_image LM_IMAGE] input_image output_presence
+```
+
+Where below are the specific tools:
+
 *landmark*
 ```
 --landmark LANDMARK.json
