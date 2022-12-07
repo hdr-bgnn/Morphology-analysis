@@ -226,7 +226,7 @@ If no arguments are given, an error message will say "missing two positional arg
 
 Upon publishing a new release, a Docker container image is automatically built from the release and published on the GitHub container and package registry. The published image is tagged with major, major.minor, and major.minor.patch versions corresponding to the release.
 
-The workflow to build the container is defined [here](.github/workflows/Deploy_Morpholgy.yml).   
+The workflow  to build the container is defined as a GitHub action [here](.github/workflows/Deploy_Morpholgy.yml).   
 
 The Dockerfile definition is [here](Dockerfile).
 
