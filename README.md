@@ -165,7 +165,7 @@ The lengths (in pixels) are calculated as the distance of a perpendicular line b
 #### Areas
 
 
-Areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of the [Minnow_Measurements_v1.csv](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Traits_description/Minnow_Measurements_v1.csv).
+Areas are calculated as the total pixels in the mask of a trait (e.g., head area is the area of the mask of the head). These are described in the "Definition" column of [Minnow_Measurements_v1.csv](Traits_description/Minnow_Measurements_v1.csv).
 
 _mask_
 
