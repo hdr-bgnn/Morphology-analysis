@@ -1,6 +1,6 @@
 # Morphology-analysis
 
-The primary goal of this repository is to produce a presence table (default), create landmarks (optional), visualize landmarks (otpional, and extract measurements (optional) from a segmented fish image produced by M. Maruf (see [BGNN-trait-segmentation](https://github.com/hdr-bgnn/BGNN-trait-segmentation)).
+The primary goal of this repository is to produce a presence table (default), create landmarks (optional), visualize landmarks (optional), and extract measurements (optional) from a segmented fish image (see [BGNN-trait-segmentation](https://github.com/hdr-bgnn/BGNN-trait-segmentation)).
 
 Secondarily, this repository provides a framework for creating modularized tools by using classes.
 
