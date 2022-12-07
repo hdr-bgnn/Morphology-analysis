@@ -143,7 +143,7 @@ The measurements extracted are shown and described below:
   
 #### Method of Measurement Extraction
 
-Each method of measurement extracted is a separate class, which adds more flexibility. These are described in [Trait_class](Scripts/Traits_class.py)
+Each method of measurement extraction is in a separate Python class. These are described in [Trait_class](Scripts/Traits_class.py)
 
 Since the functions are modular, the method for extracting measurements can be specified:
 
