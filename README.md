@@ -251,7 +251,7 @@ singularity exec morphology_latest.sif Morphology_main.py --metadata Test_Data/I
 ```
   
 ## 6- Visualize Morphological Traits 
-A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow generation/visualization morphological traits for some sample data.
+A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow generation and visualization of morphological traits for some sample data.
 
 ### Setup
 Ensure this repository has been cloned and you are in the base directory.
