@@ -236,7 +236,7 @@ docker pull ghcr.io/hdr-bgnn/morphology-analysis/morphology:latest
 #singularity pull docker://ghcr.io/hdr-bgnn/morphology-analysis/morphology:latest
 ```
 
-Run the container: 
+Run the container (assuming an HPC environment that supports singularity but not docker): 
 ```
 singularity exec morphology_latest.sif Morphology_main.py  <input_file> <presence.json> --metadata <metadata.json> --morphology <Morphology.json> --landmark <landmark.json> --lm_image <image_lm.png>
 
