@@ -46,6 +46,7 @@ To check for the presence of traits, the tool:
   1. Isolates an individual trait (e.g., isolates the dorsal_fin)
   2. Counts the number of blobs for that trait
   3. Calculates the percentage of the area of the largest blob as a proportion of the area of the total blobs for that trait
+    - i.e., if only 1 blob is found, that percentage is 100%
 
 
 ## 3- Optional Tools: Landmark, Visualize, Metadata, and Measure
