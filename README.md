@@ -256,7 +256,7 @@ A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow g
 ### Setup
 Ensure this repository has been cloned and you are in the base directory.
 
-Before running this notebook a software environment must be created containing the requirements specified in [morphology_env.yml](Scripts/morphology_env.yml) and [Jupyter's requirements](https://jupyter.org/install). Additionally a [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels) will need to be setup to to utilize this environment.
+Before running this notebook a software environment must be created containing the requirements specified in [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and [Jupyter's requirements](https://jupyter.org/install). Additionally a [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels) will need to be setup to to utilize this environment.
 
 If conda is available (for example through [miniconda](https://docs.conda.io/en/latest/miniconda.html)) an environment named "morphology" can be created like so:
 ```
