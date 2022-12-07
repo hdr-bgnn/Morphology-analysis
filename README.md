@@ -220,7 +220,7 @@ Where below are the specific tools:
 
 
 Here is an example using [Test_Data](https://github.com/hdr-bgnn/Morphology-analysis/Test_Data): 
-```
+```sh
 cd Morphology-analysis/
 ./Script/Morphology_main.py --metadata Test_Data/INHS_FISH_000742.json --morphology Test_Data/INHS_FISH_000742_measure.json --landmark Test_Data/INHS_FISH_000742_landmark.json --lm_image Test_Data/INHS_FISH_000742_image_lm.png Test_Data/INHS_FISH_000742_segmented.png Test_Data/INHS_FISH_000742_presence.json
 ```
