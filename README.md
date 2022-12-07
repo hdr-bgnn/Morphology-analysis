@@ -6,7 +6,7 @@ Secondarily, this repository provides a framework for creating modularized tools
 
 Finally, this repository also provides a way to visualize outputs of the tools and test functionalities using a jupyter notebook. 
 
-This repository is automatically containerized when a new release is published. This allows for easy integration into the [BGNN_Snakemake](https://github.com/hdr-bgnn/BGNN_Snakemake).
+A Docker container image of this codebase and its dependencies is automatically built and published each time a new release is published. The Docker container isolates dependencies and facilitates reproducible and version-tagged integration into Imageomics workflows (see for example the [BGNN core workflow](https://github.com/hdr-bgnn/BGNN_Snakemake)).
 
 This tool was originally developed for the [Minnows Project](https://github.com/hdr-bgnn/Minnow_Segmented_Traits).
 
