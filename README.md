@@ -151,7 +151,7 @@ Since the functions are modular, the method for extracting measurements can be s
 _landmarks_
 
 
-These measurement trait classes functions have the suffix *"_lm"* to denote the method of extraction. 
+These trait measurement class functions have the suffix *"_lm"* to denote the method of extraction. 
 The lengths (in pixels) are calculated as the distance between two landmarks (described in the "Definition" column of the trait description csv).
 
 
