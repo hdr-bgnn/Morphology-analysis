@@ -284,7 +284,6 @@ conda env create -f Scripts/morphology_env.yml
 ```
 
 Next you will need to configure the cluster-provided jupyter software to use the `morphology` conda environment by setting up a kernel.
-Consult tour cluster specific documentation for instructions setup the kernel. For more about setting up kernels see [ipython documentation](https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments).
+Consult your cluster specific documentation for instructions setup the kernel. For more about setting up kernels see [ipython documentation](https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments).
 
 Then launch juypter, navigate to Scripts directory, and double-click Morphology_dev.ipynb. If prompted select the kernel associated with the `morphology` conda environment.
-
