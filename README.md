@@ -259,7 +259,7 @@ To run this notebook requires installing [Jupyter](https://jupyter.org/install) 
 Ensure this repository has been cloned and you are in the base directory.
 
 ### Local Usage
-When running locally both jupyter and the [Scripts/morphology_env.yml] requirements can be installed into a single environment for simplicity.
+When running locally both jupyter and the [Scripts/morphology_env.yml](Scripts/morphology_env.yml) requirements can be installed into a single environment for simplicity.
 To create an environment named `morphology` with these requirements run the following commands: 
 ```
 conda env create -f Scripts/morphology_env.yml
