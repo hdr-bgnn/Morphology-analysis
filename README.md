@@ -272,7 +272,7 @@ jupyter-lab
 ```
 *If you see a jupyter-lab command not found error you may need to first run `conda activate morphology`.*
 
-Then within jupyter-lab navigate to Scripts directory and doubleclick Morphology_dev.ipynb. If prompted select the default python environment.
+Once your web browser opens jupyter navigate to Scripts directory and doubleclick Morphology_dev.ipynb. If prompted select the default python environment. Now you should be able to run the notebook.
 
 ### Cluster Usage
 To run this notebook on a cluster requires creating a conda environment from [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and setting up a  jupyter [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels). Clusters typically provide their own version of jupyter so that software will not need to be installed, but a kernel must be setup so the cluster provided jupyter software can find your conda environment.
@@ -286,4 +286,4 @@ conda env create -f Scripts/morphology_env.yml
 Next you will need to configure the cluster-provided jupyter software to use the `morphology` conda environment by setting up a kernel.
 Consult your cluster specific documentation for instructions setup the kernel. For more about setting up kernels see [ipython documentation](https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments).
 
-Then launch juypter, navigate to Scripts directory, and double-click Morphology_dev.ipynb. If prompted select the kernel associated with the `morphology` conda environment.
+Then launch juypter, navigate to Scripts directory, and double-click Morphology_dev.ipynb. If prompted select the kernel associated with the `morphology` conda environment. Now you should be able to run the notebook.
