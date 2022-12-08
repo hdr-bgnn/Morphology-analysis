@@ -275,7 +275,7 @@ jupyter-lab
 Then within jupyter-lab navigate to Scripts directory and doubleclick Morphology_dev.ipynb. If prompted select the default python environment.
 
 ### Cluster Usage
-To run this notebook on a cluster requires creating a conda environment from [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and setting up a  the [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels). Clusters typically provide their own version of jupyter so that software will not need to be installed, but a kernel must be setup so the cluster provided jupyter software can find your conda environment.
+To run this notebook on a cluster requires creating a conda environment from [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and setting up a  jupyter [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels). Clusters typically provide their own version of jupyter so that software will not need to be installed, but a kernel must be setup so the cluster provided jupyter software can find your conda environment.
 
 If your cluster provides conda via a minconda3 module the following commands will create an environment named `morphology` with the required dependencies:
 ```
