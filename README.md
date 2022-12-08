@@ -252,79 +252,40 @@ singularity exec morphology_latest.sif Morphology_main.py  <input_file> <presenc
 singularity exec morphology_latest.sif Morphology_main.py --metadata Test_Data/INHS_FISH_000742.json --morphology Test_Data/INHS_FISH_000742_measure.json --landmark Test_Data/INHS_FISH_000742_landmark.json --lm_image Test_Data/INHS_FISH_000742_image_lm.png Test_Data/INHS_FISH_000742_segmented.png Test_Data/INHS_FISH_000742_presence.json
 ```
   
-## 6- Play
+## 6- Visualize Morphological Traits 
+A [jupyter notebook](Scripts/Morphology_dev.ipynb) is provided that will allow generation and visualization of morphological traits for some sample data. 
 
-**Work in Progress (open to improvement and development)**
+### Requirements
+To run this notebook requires installing [Jupyter](https://jupyter.org/install) and the requirements defined in [Scripts/morphology_env.yml](Scripts/morphology_env.yml). One method to install the requirments is using the [conda](https://docs.conda.io/en/latest/) command line tool. If the conda command line tool is not already installed one popular python distribution that provides conda is [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
-In development, you can check [this notebook](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/Morphology_dev.ipynb)
-You will need to use [Morphology_env.yml](https://github.com/hdr-bgnn/Morphology-analysis/blob/main/Scripts/morphology_env.yml) to set up your environment before working (required dependencies). I recommend conda, miniconda as environment manager.
+Ensure this repository has been cloned and you are in the base directory.
 
-To set up your virtual environment in the OSC:
+### Local Usage
+When running locally both jupyter and the [Scripts/morphology_env.yml](Scripts/morphology_env.yml) requirements can be installed into a single environment for simplicity.
+To create an environment named `morphology` with these requirements run the following commands: 
+```
+conda env create -f Scripts/morphology_env.yml
+conda activate morphology
+pip install jupyter-lab
+```
+Then to start jupyter run the following command: 
+```
+jupyter-lab
+```
+*If you see a jupyter-lab command not found error you may need to first run `conda activate morphology`.*
 
-1. Create an account on the OSC
-2. Go to OSC home directory
-3. Open a cluster
-4. Clone the repository onto your home directory
+Once your web browser opens jupyter navigate to Scripts directory and doubleclick Morphology_dev.ipynb. If prompted select the default python environment.
 
-  ```
-  git clone <SSH link>
-  ```
+### Cluster Usage
+To run this notebook on a cluster requires creating a conda environment from [Scripts/morphology_env.yml](Scripts/morphology_env.yml) and setting up a  jupyter [kernel](https://docs.jupyter.org/en/latest/projects/kernels.html#kernels). Clusters typically provide their own version of jupyter so that software will not need to be installed, but a kernel must be setup so the cluster provided jupyter software can find your conda environment.
 
-5. Navigate to scripts
+If your cluster provides conda via a minconda3 module the following commands will create an environment named `morphology` with the required dependencies:
+```
+module load miniconda3
+conda env create -f Scripts/morphology_env.yml
+```
 
-  ```
-  cd Morphology-analysis/Scripts
-  ```
-  
-6. Run conda & create an environment
+Next you will need to configure the cluster-provided jupyter software to use the `morphology` conda environment by setting up a kernel.
+Consult your cluster specific documentation for instructions setup the kernel. For more about setting up kernels see [ipython documentation](https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments).
 
-  ```
-  module load miniconda3
-  conda info -e #should be on "base"
-  conda env create -f morphology_env.yml -n morphology_env
-  ```
-  
-  -f means files to select (which is morphology_env.yml)
-  
-  -n means to name the virtual environment, which here is "morphology_env"
-
-  Check that the environment was made
-
-  ```
-  conda info -e
-  ```
-  
-  Activate the environment 
-
-  ```
-  source acitvate morphology_env
-  ```
-  
-  Check that you're on the virtual environment
-
-  ```
-  conda info -e #you should be on "morphology_env"
-  ```
-  
-  Once the environment is set up, you do not need to recreate it.
-  
-7. Launch the jupyter notebook app and set your kernel to "Python Morphology_jupyter".
-
-  Activate the virtual environment kernel for jupyter notebook
-
-  ```
-  pip install ipykernel
-  python -m ipykernel install --user --name morphlogy_env --display-name "Python (Morphology_jupyter)"
-  ```
-
-  Once you set up the kernel for jupyter notebook, you do not need to do it again.
-
-
-**Launch Jupyter notebook Morphology_dev.ipynb**
-  + Use OSC dashboard [On Demand](https://ondemand.osc.edu/pun/sys/dashboard)
-  + Tab Interactive Apps
-  + Select Jupyter notebook
-  + Choose the configuration you want (start with cores:1 Number_hours:1, Node_type:any)
-  + Launch
-  + Navigate to ~/Morphology-analysis/Scripts/Morphology_dev.ipynb
-  + Change kernel to Morphology_jupyter
+Then launch juypter, navigate to Scripts directory, and double-click Morphology_dev.ipynb. If prompted select the kernel associated with the `morphology` conda environment.
