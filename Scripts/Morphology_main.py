@@ -6,49 +6,40 @@ Created on Tue May 24 09:21:33 2022
 @author: thibault
 """
 import Traits_class as tc
-import json, sys, math
+import json
 import numpy as np
+import argparse
 
 def get_scale(metadata_file):
-
     '''
-    extract the scale value from metadata file
+    Extract the scale value from metadata file    
+
+    Parameters
+    ----------
+    metadata_file : string
+        DESCRIPTION. .json file containing scale key such as{....{ruler:{scale:xxx, unit:yyy}}}
+
+    Returns
+    -------
+    scale : float
+        DESCRIPTION. scale conversion pixel/unit
+    unit : string
+        DESCRIPTION. unit value expected cm or in(inch)
+
     '''
     
-    f = open(metadata_file)
-    data = json.load(f)
-    metadata_dict = list(data.values())[0]
-    scale = 'None'
-    unit = 'None'
+    with open(metadata_file, 'r') as f:
+        metadata_dict = json.load(f)
+        
+    scale = "None"
+    unit = "None"
 
-    if 'scale' in metadata_dict  :
-        scale = round(metadata_dict['scale'],3)
-        unit = metadata_dict['unit']
+    if 'ruler' in metadata_dict  :
+        scale = round(metadata_dict['ruler']['scale'],3)
+        unit = metadata_dict['ruler']['unit']
         
     return scale , unit
 
-
-def get_angle(metadata_file):
-
-    '''
-    Calculate fish orientation from metadata file using major axis
-    return value in degree
-    
-    '''
-    f = open(metadata_file)
-    data = json.load(f)
-    metadata_fish = list(data.values())[0]['fish'][0]
-    fish_angle = None
-    major = []
-    length = []
-    
-    if 'primary_axis' in metadata_fish  :
-        
-        major = metadata_fish['primary_axis']
-        fish_angle = math.atan2(major[1], -major[0])*(180/math.pi)
-        fish_angle = round(fish_angle,2)
-
-    return fish_angle
 
 # this class is used by json.dump to control that every value as the right format
 # particular problem encounter with np.int64 value type
@@ -63,70 +54,100 @@ class NpEncoder(json.JSONEncoder):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
 
-def main(input_file, metadata_file, output_measure, output_landmark, output_presence, 
-         output_lm_image=None):
+def argument_parser():
+    parser = argparse.ArgumentParser(description='Extract information from segmented fish image such as presence absence,\
+                                     landmarks, measures.')
+    parser.add_argument('input_image', help='Path of segmented fish image. Format PNG image file.')
+    parser.add_argument('output_presence', help='Path of output presence absence table. Format JSON file.')
+    
+    
+    parser.add_argument('--metadata', 
+                        help=' Path to the metadata, structured as output by drexel_metadata_formatter. Format JSON file.')
+    parser.add_argument('--morphology', 
+                        help='Save the dictionnary of morphology measurements with the provided filename.')
+    parser.add_argument('--landmark', 
+                        help='Save the dictionnary of landmarks with the provided filename.')
+    parser.add_argument('--lm_image', 
+                        help='Save the visualisation of landmarks with the provided filename.')
+    return parser
+
+def main():
+    '''
+    Use Class Segmented_image, Measure_morphology to extract information 
+    from a segmented fish image (.png image).
+    
+    Input output are managed by argument_parser()
+    
+    Segmented_image creates an object that isolates different traits, preprocesses them and extract genral info (such as fish angle)
+    Measure_morphology inherits from Segmented_image and uses preprocessed traits information to measure morphology
+    characteristic and landmarks.
+    There are 4 mains output defined in argument_parser()
+    args.output_presence : {"dorsal_fin": {"number": 1, "percentage": 1.0}, "adipos_fin": {"number": 0, "percentage": 0}....}
+    number: number of blob per trait, percentage: area % of the bigger blob.
+    args.metadata : filename to import for metadata info (scale information) -  structured as output by drexel_metadata_formatter.
+    args.morphology : filename to save Morphology measurement from bbox and from lankmarks.
+    args.landmark : filename to save Coordinate of the landmark extracted.
+    args.lm_image : filename to save visualization of the landmarks
+    
+    Returns
+    -------
+    None.
+
+    '''
+    parser = argument_parser()
+    args = parser.parse_args()
+    
     
     # Create the image segmentation object
-    img_seg = tc.Segmented_image(input_file, align = True)
+    img_seg = tc.Segmented_image(args.input_image, align=True)
     base_name = img_seg.base_name
     # Create object measure_morphology
-    measure_morph = tc.Measure_morphology(input_file, align = True)
+    measure_morph = tc.Measure_morphology(args.input_image, align=True)
     # Calcualte the mesaurements and landmarks
     
-    # Assign variables
+    # Assign variables from img_seg
+    presence_matrix = {'base_name' : base_name, **img_seg.presence_matrix,
+                       'ruler':{'presence' : 'no', 'scale' : 'None', 'unit' : 'None'}}
+    # Assign variable from measure_morph
     measurements_bbox = measure_morph.measurement_with_bbox
     measurements_lm = measure_morph.measurement_with_lm
     measurements_area = measure_morph.measurement_with_area
     landmark = measure_morph.landmark
-    presence_matrix = measure_morph.presence_matrix
-    
+        
     # Combine the 3 types of measurements (lm, bbox, area) and reorder the keys
     measurement = {'base_name': base_name, **measurements_bbox, **measurements_lm, **measurements_area }
-    list_measure= ['base_name', 'SL_bbox', 'SL_lm', 'HL_bbox', 'HL_lm', 'pOD_bbox', 'pOD_lm', 'ED_bbox', 'ED_lm', 'HH_lm', 'EA_m','HA_m','FA_pca','FA_lm']
+    list_measure = ['base_name', 'SL_bbox', 'SL_lm', 'HL_bbox', 'HL_lm', 'pOD_bbox', 'pOD_lm', 'ED_bbox', 'ED_lm', 'HH_lm', 'EA_m','HA_m','FA_pca','FA_lm']
     measurement = {k:measurement[k] for k in list_measure}
+    measurement.update({'scale':"None", 'unit': "None"})     
     
     # Extract the scale from metadata file
     # and add it to measurement dict
-    scale , unit = get_scale(metadata_file)
-    measurement['scale'] = scale
-    measurement['unit'] = unit                   
-    
-    # Extract the fish angle from metadata file
-    # and add it to measurement dict
-    fish_angle = get_angle(metadata_file)
-    measurement['FA_pca_meta'] = fish_angle    
+    if args.metadata:        
+        scale , unit = get_scale(args.metadata)
+        measurement['scale'] = scale
+        measurement['unit'] = unit 
         
+        presence_matrix['ruler'] = {'presence' : 'yes', 'scale' : scale, 'unit' : unit}                
+    
+    with open(args.output_presence, 'w') as f:
+        json.dump(presence_matrix, f) 
+          
     # Save the dictionnaries in json file
     # use NpEncoder to convert the value to correct type (np.int64 -> int)
-    with open(output_measure, 'w') as f:
-        json.dump(measurement, f, cls=NpEncoder)    
-        
-    with open(output_landmark, 'w') as f:
-        json.dump(landmark, f)
-        
-    with open(output_presence, 'w') as f:
-        json.dump(presence_matrix, f)    
+    if args.morphology:        
+        with open(args.morphology, 'w') as f:
+            json.dump(measurement, f, cls=NpEncoder)    
     
-    if output_lm_image:
-        
-
+    if args.landmark:
+        with open(args.landmark, 'w') as f:
+            json.dump(landmark, f)
+              
+    if args.lm_image:        
         # create landmark visualization image and save it
         img_landmark = measure_morph.visualize_landmark()
-        img_landmark.save(output_lm_image)
+        img_landmark.save(args.lm_image)
     
     
 if __name__ == '__main__':
 
-    input_file = sys.argv[1]
-    metadata_file = sys.argv[2]
-    output_measure = sys.argv[3]
-    output_landmark = sys.argv[4]
-    output_presence = sys.argv[5]
-    output_lm_image = None
-    
-    
-    if len(sys.argv)==7:
-        output_lm_image = sys.argv[6]
-        
-    main(input_file, metadata_file, output_measure, output_landmark, output_presence, 
-         output_lm_image=output_lm_image)
+    main()
