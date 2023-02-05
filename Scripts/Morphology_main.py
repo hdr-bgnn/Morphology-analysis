@@ -35,7 +35,9 @@ def get_scale(metadata_file):
     unit = "None"
 
     if 'ruler' in metadata_dict  :
-        scale = round(metadata_dict['ruler']['scale'],3)
+        scale = metadata_dict['ruler']['scale']
+        if scale != "None":
+            scale = round(scale, 3)
         unit = metadata_dict['ruler']['unit']
         
     return scale , unit
