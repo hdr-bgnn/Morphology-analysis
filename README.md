@@ -116,7 +116,7 @@ Here is an [example](Test_Data/INHS_FISH_000742.json) of a metadata file.
   
 ### Measure
 
-The output of the measure tool is a file named fishARKID_measure.json that has measurements (in pixels) for each trait.
+The output of the measure tool is a JSON file that has measurements (in pixels) for each trait.
 
 The measurements extracted are shown and described below:
 
