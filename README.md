@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/508446875.svg)](https://zenodo.org/badge/latestdoi/508446875)
+
 # Morphology-analysis
 
 The primary goal of this repository is to produce a presence table (default), create landmarks (optional), visualize landmarks (optional), and extract measurements (optional) from a segmented fish image (see [BGNN-trait-segmentation](https://github.com/hdr-bgnn/BGNN-trait-segmentation)).
