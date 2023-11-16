@@ -1,0 +1,26 @@
+cff-version: 1.0.0
+date-released: "2023-05-30"
+authors:
+  - family-names: Tabarin
+    given-names: Thibault
+    orcid: "https://orcid.org/0000-0003-4256-849X"
+  - family-names: Bradley
+    given-names: John
+    orcid: "https://orcid.org/0000-0003-3858-848X"
+  - family-names: Balk
+    given-names: Meghan
+    orcid: "https://orcid.org/0000-0003-2699-3066"
+  - family-names: Lapp
+    given-names: Hilmar
+    orcid: "https://orcid.org/0000-0001-9107-0714"
+identifiers:
+  - description: "This code base produces a presence-absence table (default), create landmarks (optional), visualization of landmarks (optional), and extracts measurements (optional) from a segmented fish image (see BGNN-trait-segmentation). Secondarily, this repository provides a framework for creating modularized tools by using classes. A Docker container image of this codebase and its dependencies is automatically built and published each time a new release is published. The Docker container isolates dependencies and facilitates reproducible and version-tagged integration into Imageomics workflows (see for example the BGNN Core Workflow). This tool was originally developed for the Minnows Project."
+    type: doi
+    value: 10.5281/zenodo.7987697
+keywords:
+  - "imageomics"
+  - "metadata"
+license: MIT
+repository-code: "https://github.com/hdr-bgnn/Morphology-analysis"
+title: "Morphology analysis"
+version: 1.0.0
