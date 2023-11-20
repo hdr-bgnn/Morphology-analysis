@@ -1,5 +1,6 @@
 cff-version: 1.0.0
 date-released: "2023-05-30"
+abstract: "This code base produces a presence-absence table (default), create landmarks (optional), visualization of landmarks (optional), and extracts measurements (optional) from a segmented fish image (see BGNN-trait-segmentation). Secondarily, this repository provides a framework for creating modularized tools by using classes. A Docker container image of this codebase and its dependencies is automatically built and published each time a new release is published. The Docker container isolates dependencies and facilitates reproducible and version-tagged integration into Imageomics workflows (see for example the BGNN Core Workflow). This tool was originally developed for the Minnows Project."
 authors:
   - family-names: Tabarin
     given-names: Thibault
@@ -14,7 +15,7 @@ authors:
     given-names: Hilmar
     orcid: "https://orcid.org/0000-0001-9107-0714"
 identifiers:
-  - description: "This code base produces a presence-absence table (default), create landmarks (optional), visualization of landmarks (optional), and extracts measurements (optional) from a segmented fish image (see BGNN-trait-segmentation). Secondarily, this repository provides a framework for creating modularized tools by using classes. A Docker container image of this codebase and its dependencies is automatically built and published each time a new release is published. The Docker container isolates dependencies and facilitates reproducible and version-tagged integration into Imageomics workflows (see for example the BGNN Core Workflow). This tool was originally developed for the Minnows Project."
+  - description: "Snapshot of Morphology-analysis: Version 1.0.0."
     type: doi
     value: 10.5281/zenodo.7987697
 keywords:
